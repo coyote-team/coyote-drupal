@@ -1,0 +1,19 @@
+coyote_img_desc.status:
+  path: '/coyote/status'
+  defaults:
+    _controller: '\Drupal\coyote_img_desc\Controller\RestApiController::status'
+    _title: 'Status endpoint'
+  methods:
+    ['OPTIONS', 'GET', 'HEAD']
+  requirements:
+    _access: 'TRUE'
+
+coyote_img_desc.callback:
+  path: '/coyote/callback'
+  defaults:
+    _controller: '\Drupal\coyote_img_desc\Controller\RestApiController::callback'
+    _title: 'Resource update callback'
+  methods:
+    ['OPTIONS', 'POST', 'HEAD']
+  requirements:
+    _access: 'TRUE'

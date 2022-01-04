@@ -1,0 +1,53 @@
+<?php
+
+function coyote_img_desc_schema(): array {
+  $image_resource_table = [
+    'description' => 'Coyote resource lookup table.',
+    'fields' => [
+      'source_uri_sha1' => [
+        'description' => 'The sha1 hash of the image src.',
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => true,
+      ],
+      'source_uri' => [
+        'description' => 'The image src.',
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => true
+      ],
+      'coyote_resource_id' => [
+        'type' => 'int',
+        'size' => 'big',
+        'unsigned' => true,
+        'not null' => true
+      ],
+      'original_description' => [
+        'type' => 'text',
+        'size' => 'normal',
+        'not null' => true
+      ],
+      'coyote_description' => [
+        'type' => 'text',
+        'size' => 'normal',
+        'not null' => true
+      ]
+    ],
+    'primary_key' => ['source_uri_sha1'],
+    'indexes' => [
+      'coyote_resource_id' => ['coyote_resource_id']
+    ]
+  ];
+
+  return ['image_resource' => $image_resource_table];
+}
+
+/**
+source_uri_sha1 VARCHAR(40) NOT NULL,
+source_uri MEDIUMTEXT NOT NULL,
+coyote_resource_id BIGINT(20) UNSIGNED NOT NULL,
+original_description TEXT DEFAULT '' NOT NULL,
+coyote_description TEXT DEFAULT '' NOT NULL,
+PRIMARY KEY (source_uri_sha1),
+INDEX (coyote_resource_id)
+ */

@@ -1,0 +1,24 @@
+<?php
+
+require_once(dirname(__FILE__) . '/src/ContentParser.php');
+require_once(dirname(__FILE__) . '/src/Util.php');
+
+use Drupal\coyote_img_desc\Util;
+use Drupal\coyote_img_desc\ContentParser;
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+
+function coyote_img_desc_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $_display, $_view_mode) {
+  $ddm = \Drupal::service('devel.dumper');
+
+  try {
+    $body = $entity->getTypedData()->get('body')->getValue()->get(0);
+    $body = ContentParser::replaceImageDescriptions($body, function(string $source): ?string {
+      $resource = Util::getImageResourceBySourceUri($source);
+      return is_null($resource) ? null : $resource->getCoyoteDescription();
+    });
+  } catch (Exception $error) {
+    $ddm->debug(['Error fetching body' => $error->getMessage(), 'node' => $entity->id()]);
+  }
+}

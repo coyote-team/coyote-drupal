@@ -1,0 +1,4 @@
+services:
+  coyote_img_desc.logger.channel.coyote_img_desc:
+    parent: logger.channel_base
+    arguments: [ 'coyote_img_desc' ]
