@@ -1,0 +1,6 @@
+coyote_img_desc.admin:
+  title: 'Coyote Image Description'
+  description: 'Manage settings for the the Coyote Image Description module.'
+  parent: system.admin_config_system
+  route_name: coyote_img_desc.coyote_img_desc_form
+  weight: 1

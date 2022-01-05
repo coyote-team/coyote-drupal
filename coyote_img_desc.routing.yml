@@ -17,3 +17,11 @@ coyote_img_desc.callback:
     ['OPTIONS', 'POST', 'HEAD']
   requirements:
     _access: 'TRUE'
+
+coyote_img_desc.coyote_img_desc_form:
+  path: '/admin/config/coyote-img-desc-configuration'
+  defaults:
+    _form: '\Drupal\coyote_img_desc\Form\CoyoteImgDescForm'
+    _title: 'Coyote Image Description Configuration'
+  requirements:
+    _permission: 'administer site configuration'
