@@ -4,10 +4,8 @@ namespace Drupal\coyote_img_desc;
 
 class ContentParser {
 
-  public static function replaceImageDescriptions(string $content, callable $descriptionLookupFn)
+  public static function replaceImageDescriptions(string $content, callable $descriptionLookupFn): string
   {
-    $ddm = \Drupal::service('devel.dumper');
-
     // extract images
     // invoke descriptionLookupFn with image source
     // set the alt text
