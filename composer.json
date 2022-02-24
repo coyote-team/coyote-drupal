@@ -1,0 +1,5 @@
+{
+    "require": {
+        "coyote/coyote-api-client": "^1.0"
+    }
+}

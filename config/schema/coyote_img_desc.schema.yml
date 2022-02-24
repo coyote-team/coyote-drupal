@@ -8,3 +8,6 @@ coyote_img_desc.settings:
     api_endpoint:
       type: string
       label: 'API Endpoint'
+    api_organization:
+      type: integer
+      label: 'API Organization'
