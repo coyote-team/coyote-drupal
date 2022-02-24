@@ -18,6 +18,17 @@ coyote_img_desc.callback:
   requirements:
     _access: 'TRUE'
 
+coyote_img_desc.import:
+  path: '/admin/config/coyote-img-desc-import'
+  defaults:
+    _controller: '\Drupal\coyote_img_desc\Controller\ResourceImportController::import'
+    _title: 'Import resource from node entities'
+  methods:
+    ['OPTIONS', 'POST', 'HEAD']
+  requirements:
+    _access: 'TRUE'
+#    _permission: 'administer site configuration'
+
 coyote_img_desc.coyote_img_desc_form:
   path: '/admin/config/coyote-img-desc-configuration'
   defaults:
