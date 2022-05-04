@@ -4,13 +4,18 @@ namespace Drupal\coyote_img_desc\Form;
 
 require_once( __DIR__ . '/../../vendor/autoload.php');
 
-use Coyote\HelperFunctions;
+use Coyote\CoyoteApiClientHelperFunctions;
 use Coyote\Model\OrganizationModel;
-use Coyote\Request\GetMembershipsRequest;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 class CoyoteImgDescForm extends ConfigFormBase {
+
+  private static function isDefined(string $var): bool
+  {
+    return strlen($var) > 0;
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -30,8 +35,8 @@ class CoyoteImgDescForm extends ConfigFormBase {
 
     $suffix = '';
 
-    if (isset($token) && isset($endpoint)) {
-      $profile = HelperFunctions::getProfile($endpoint, $token);
+    if (self::isDefined($token) && self::isDefined($endpoint)) {
+      $profile = CoyoteApiClientHelperFunctions::getProfile($endpoint, $token);
       if (is_null($profile)) {
         $suffix = 'Unable to load a valid API profile.';
       } else {
@@ -72,14 +77,14 @@ class CoyoteImgDescForm extends ConfigFormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $endpoint = $form_state->getValue('api_endpoint');
     $token = $form_state->getValue('api_token');
-    $profile = HelperFunctions::getProfile($endpoint, $token);
+    $profile = CoyoteApiClientHelperFunctions::getProfile($endpoint, $token);
 
     if (is_null($profile)) {
       $form_state->setErrorByName('api_token', $this->t('The combination of token and/or endpoint is invalid.'));
     }
 
     $config = $this->config('coyote_img_desc.settings');
-    $organizations = HelperFunctions::getOrganizations($endpoint, $token);
+    $organizations = CoyoteApiClientHelperFunctions::getOrganizations($endpoint, $token);
     $options = array_reduce($organizations, function(array $carry, OrganizationModel $item): array {
       $carry[$item->getId()] = $item->getName();
       return $carry;
