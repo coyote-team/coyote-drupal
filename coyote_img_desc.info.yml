@@ -1,5 +1,5 @@
 name: Coyote Image Describer
 type: module
 description: 'Provides and manages image descriptions via the coyote.pics service'
-core: 8.x
+core_version_requirement: 9.x
 package: Custom
