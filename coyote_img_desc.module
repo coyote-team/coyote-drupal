@@ -1,5 +1,6 @@
 <?php
 
+use Coyote\ContentHelper\Image;
 use Drupal\coyote_img_desc\Util;
 use Drupal\coyote_img_desc\ContentParser;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -12,8 +13,9 @@ function coyote_img_desc_node_view_alter(array &$build, EntityInterface $entity,
 
 function coyote_img_desc_node_view_alter_post_render(string $html, array &$build): string
 {
-  return ContentParser::replaceImageDescriptions($html, function(string $source): ?string {
-    $resource = Util::getImageResourceBySourceUri($source);
+  return ContentParser::replaceImageDescriptions($html, function(Image $image): ?string {
+    // Try to obtain the host uri from the build array
+    $resource = Util::getImageResource($image);
     return is_null($resource) ? null : $resource->getCoyoteDescription();
   });
 }

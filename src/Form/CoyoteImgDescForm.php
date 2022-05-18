@@ -9,7 +9,9 @@ use Coyote\Model\OrganizationModel;
 use Coyote\Model\ProfileModel;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Helper\CoyoteMembershipHelper;
+use Drupal\coyote_img_desc\Util;
 use JetBrains\PhpStorm\ArrayShape;
 
 class CoyoteImgDescForm extends ConfigFormBase {
@@ -80,7 +82,50 @@ class CoyoteImgDescForm extends ConfigFormBase {
       $form['api_organization'] = self::getApiOrganizationIdFieldConfig($profile, $storedOrganizationId);
     }
 
+    if (!is_null($profile) && !is_null($storedOrganizationId)) {
+      $this->verifyResourceGroup($form, $endpoint, $token, $storedOrganizationId, $config->get('api_resource_group'));
+    }
+
     return $form;
+  }
+
+  private function verifyResourceGroup(
+    array &$form,
+    string $endpoint,
+    string $token,
+    int $organizationId,
+    ?int $resourceGroupId
+  ) {
+    $group = null;
+
+    if (is_null($resourceGroupId)) {
+      $group = CoyoteApiClientHelperFunctions::getResourceGroupByUri(
+        $endpoint, $token, $organizationId, Util::getResourceGroupUri()
+      );
+    }
+
+    if (is_null($resourceGroupId && is_null($group))) {
+      $group = CoyoteApiClientHelperFunctions::createResourceGroup(
+        $endpoint,
+        $token,
+        $organizationId,
+        Constants::RESOURCE_GROUP_NAME,
+        Util::getResourceGroupUri()
+      );
+    }
+
+    if (!is_null($group)) {
+      $resourceGroupId ??= $group->getId();
+    }
+
+    if (!is_null($resourceGroupId)) {
+      $config = $this->config('coyote_img_desc.settings');
+      $config->set('api_resource_group', (int) $resourceGroupId);
+      $config->save();
+      $form['api_organization']['#field_suffix'] = $this->t("Resource group {$resourceGroupId} &#xFE0F;");
+    }
+
+    // TODO track that no resource group is available
   }
 
   #[ArrayShape([
@@ -89,7 +134,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
     '#name' => "string",
     '#options' => "array|mixed",
     '#default_value' => "int|null|string"
-  ])] private function getApiOrganizationIdFieldConfig(ProfileModel $profile, ?string $currentId): array
+  ])] private function getApiOrganizationIdFieldConfig(ProfileModel $profile, ?int $currentId): array
   {
     $organizations = $profile->getOrganizations();
     $options = array_reduce($organizations, function(array $carry, OrganizationModel $item): array {
@@ -97,7 +142,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
       return $carry;
     }, []);
 
-    $value = $currentId;
+    $value = is_null($currentId) ? null : (string) $currentId;
 
     if (!is_null($organizations)) {
       if (count($organizations) > 1) {
@@ -147,9 +192,6 @@ class CoyoteImgDescForm extends ConfigFormBase {
     }
 
     $form['api_organization'] = self::getApiOrganizationIdFieldConfig($profile, $organizationId);
-
-    $ddm = \Drupal::service('devel.dumper');
-    $ddm->debug([$form_state->getValues(), $endpoint, $token, is_null($organizationId) ? 'null' : 'not_null']);
 
     if (is_null($organizationId)) {
       \Drupal::messenger()->addStatus("Please select an organization.");

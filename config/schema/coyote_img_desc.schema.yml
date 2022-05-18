@@ -11,3 +11,6 @@ coyote_img_desc.settings:
     api_organization:
       type: integer
       label: 'API Organization'
+    api_resource_group:
+      type: integer
+      label: 'API Resource Group'

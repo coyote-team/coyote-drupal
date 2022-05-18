@@ -1,3 +1,4 @@
 api_token: ''
 api_endpoint: 'https://staging.coyote.pics/api/v1'
 api_organization: null
+api_resource_group: null
