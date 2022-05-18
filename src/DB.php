@@ -37,7 +37,14 @@ class DB {
       ->fields('r')
       ->condition('source_uri_sha1', $hash)
       ->execute();
-    return $result->fetch();
+
+    $record = $result->fetchObject();
+
+    if ($record === false) {
+      return null;
+    }
+
+    return $record;
   }
 }
 

@@ -1,21 +1,11 @@
 <?php
 
-use Coyote\ContentHelper\Image;
-use Drupal\coyote_img_desc\Util;
-use Drupal\coyote_img_desc\ContentParser;
+use Drupal\coyote_img_desc\Hook\NodeViewAlterPostRenderHook;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 
 function coyote_img_desc_node_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void
 {
-  $build['#post_render'][] = 'coyote_img_desc_node_view_alter_post_render';
-}
-
-function coyote_img_desc_node_view_alter_post_render(string $html, array &$build): string
-{
-  return ContentParser::replaceImageDescriptions($html, function(Image $image): ?string {
-    // Try to obtain the host uri from the build array
-    $resource = Util::getImageResource($image);
-    return is_null($resource) ? null : $resource->getCoyoteDescription();
-  });
+  $build['_coyote_node_url'] = $entity->toUrl('canonical', ['absolute' => true])->toString();
+  $build['#post_render'][] = [NodeViewAlterPostRenderHook::class, 'hook'];
 }

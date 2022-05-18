@@ -22,8 +22,8 @@ class Util {
     return new ImageResource(
       $entry->source_uri_sha1,
       $entry->source_uri,
-      $entry->coyote_id,
-      $entry->local_description,
+      $entry->coyote_resource_id,
+      $entry->original_description,
       $entry->coyote_description
     );
   }
@@ -37,7 +37,7 @@ class Util {
 
     $imageResource = new ImageResource(
       $sha1,
-      $resource->getSourceUri(),
+      $image->getSrc(),
       intval($resource->getId()),
       $image->getAlt(),
       $coyoteDescription
@@ -46,27 +46,47 @@ class Util {
     DB::insertResource($imageResource);
 
     return $imageResource;
-
   }
 
-  private static function getImageResourceFromAPI(Image $image): ?ImageResource
+  private static function getImageUrl(string $url): string
   {
+    // if the image is relative, strip off the first slash
+    if (mb_substr($url, 0, 1) === '/') {
+      $url = \Drupal::service('file_url_generator')
+        ->generateAbsoluteString(mb_substr($url, 1));
+    }
 
+    // strip off the scheme
+    return preg_replace('/^https?:/', '', $url, 1);
+  }
+
+  private static function getImageResourceFromAPI(Image $image, ?string $hostUri = null): ?ImageResource
+  {
     $config = \Drupal::config('coyote_img_desc.settings');
     $token = $config->get('api_token');
     $endpoint = $config->get('api_endpoint');
-
-    // TODO verify that we _have_ an org ID, otherwise we shouldn't even move forward
-    $organizationId = $config->get('api_organization_id');
-    $resourceGroupId = $config->get('api_resource_group_id');
 
     if(!self::isDefined($token) || !self::isDefined($endpoint)) {
       return null;
     }
 
-    // TODO obtain the host_uri from somewhere
+    $organizationId = $config->get('api_organization');
+
+    if (is_null($organizationId)) {
+      return null;
+    }
+
+    $resourceGroupId = $config->get('api_resource_group');
+
+    $url = self::getImageUrl($image->getSrc());
+
+
+        $ddm = \Drupal::service('devel.dumper');
+        $ddm->debug(['url!', $url]);
+
+
     $payload = new CreateResourcePayload(
-      $image->getSrc(), $image->getSrc(), $resourceGroupId, null
+      $url, $url, $resourceGroupId, $hostUri
     );
 
     $resource = CoyoteApiClientHelperFunctions::createResource($endpoint, $token, $organizationId, $payload);
@@ -78,9 +98,9 @@ class Util {
     return self::createImageResourceFromCoyoteResource($image, $resource);
   }
 
-  public static function getImageResource(Image $image): ?ImageResource
+  public static function getImageResource(Image $image, ?string $hostUri = null): ?ImageResource
   {
-    return self::getImageResourceFromDB($image) ?? self::getImageResourceFromAPI($image);
+    return self::getImageResourceFromDB($image) ?? self::getImageResourceFromAPI($image, $hostUri);
   }
 
   private static function isDefined(string $var): bool
