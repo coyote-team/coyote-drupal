@@ -31,6 +31,33 @@ class DB {
     }
   }
 
+  public static function getResourceByCoyoteId(string $id) {
+    $database = \Drupal::database();
+    $result = $database->select('image_resource', 'r')
+      ->fields('r')
+      ->condition('coyote_resource_id', $id)
+      ->execute();
+
+    $record = $result->fetchObject();
+
+    if ($record === false) {
+      return null;
+    }
+
+    return $record;
+  }
+
+  public static function updateResourceCoyoteDescription(string $id, string $alt): bool
+  {
+    $database = \Drupal::database();
+    $rows = $database->update('image_resource')
+      ->fields(['coyote_description' => $alt])
+      ->condition('coyote_resource_id', $id)
+      ->execute();
+
+    return $rows === 1;
+  }
+
   public static function getResourceByHash(string $hash) {
     $database = \Drupal::database();
     $result = $database->select('image_resource', 'r')
