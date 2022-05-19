@@ -12,7 +12,6 @@ class ContentParser {
   {
     $contentHelper = new ContentHelper($content);
 
-    /** @var \Coyote\ContentHelper\Image[] $images */
     $images = $contentHelper->getImages();
 
     $map = [];

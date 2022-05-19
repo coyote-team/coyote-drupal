@@ -3,7 +3,6 @@
 namespace Drupal\coyote_img_desc\Controller;
 
 use Coyote\CoyoteApiClient;
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Hook\RestApiUpdatePostHook;

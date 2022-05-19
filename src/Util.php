@@ -6,6 +6,7 @@ use Coyote\ContentHelper\Image;
 use Coyote\CoyoteApiClientHelperFunctions;
 use Coyote\Model\ResourceModel;
 use Coyote\Payload\CreateResourcePayload;
+use Coyote\Payload\ResourceRepresentationPayload;
 use Drupal\coyote_img_desc\DB;
 use Drupal\coyote_img_desc\ImageResource;
 
@@ -79,15 +80,17 @@ class Util {
     $resourceGroupId = $config->get('api_resource_group');
 
     $url = self::getImageUrl($image->getSrc());
-
-
-        $ddm = \Drupal::service('devel.dumper');
-        $ddm->debug(['url!', $url]);
-
+    $name = $image->getFigureCaption() ?? $url;
 
     $payload = new CreateResourcePayload(
-      $url, $url, $resourceGroupId, $hostUri
+      $name, $url, $resourceGroupId, $hostUri
     );
+
+    $alt = $image->getAlt();
+
+    if (!is_null($alt)) {
+      $payload->addRepresentation($alt, Constants::METUM);
+    }
 
     $resource = CoyoteApiClientHelperFunctions::createResource($endpoint, $token, $organizationId, $payload);
 
