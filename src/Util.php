@@ -4,7 +4,7 @@ namespace Drupal\coyote_img_desc;
 
 use Coyote\ContentHelper\Image;
 use Coyote\CoyoteApiClientHelperFunctions;
-use Coyote\Model\ResourceModel;
+use Coyote\Model\WebhookUpdateModel;
 use Coyote\Payload\CreateResourcePayload;
 use Coyote\Payload\ResourceRepresentationPayload;
 use Drupal\coyote_img_desc\DB;
@@ -29,7 +29,7 @@ class Util {
     );
   }
 
-  private static function createImageResourceFromCoyoteResource(Image $image, ResourceModel $resource): ImageResource
+  private static function createImageResourceFromCoyoteResource(Image $image, WebhookUpdateModel $resource): ImageResource
   {
     $sha1 = sha1($image->getSrc());
 
