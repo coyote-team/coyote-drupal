@@ -2,12 +2,12 @@
 
 namespace Drupal\coyote_img_desc\Hook;
 
-use Coyote\Model\ResourceModel;
+use Coyote\Model\WebhookUpdateModel;
 use Drupal\coyote_img_desc\DB;
 use Drupal\coyote_img_desc\Constants;
 
 class RestApiUpdatePostHook {
-  public static function hook(?ResourceModel $update): bool {
+  public static function hook(?WebhookUpdateModel $update): bool {
     if (is_null($update)) {
       return false;
     }
