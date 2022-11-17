@@ -25,22 +25,22 @@ class CoyoteImgDescForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'coyote_img_desc_config_form';
+    return $this->t('coyote_img_desc_config_form');
   }
 
   private function getProfileSuffix(?ProfileModel $profile): string
   {
     if (is_null($profile)) {
-      return 'Unable to load a valid API profile.';
+      return $this->t('Unable to load a valid API profile.');
     }
 
     $highestRole = CoyoteMembershipHelper::getHighestMembershipRole($profile->getMemberships());
 
     if (is_null($highestRole)) {
-      return 'This account has insufficient Coyote API permissions.';
+      return $this->t('This account has insufficient Coyote API permissions.');
     }
 
-    return "Owner: {$profile->getName()} ({$highestRole})";
+    return $this->t("Owner: {$profile->getName()} ({$highestRole})");
   }
 
   /**
@@ -200,7 +200,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
     $form['api_organization'] = self::getApiOrganizationIdFieldConfig($profile, $organizationId);
 
     if (is_null($organizationId)) {
-      \Drupal::messenger()->addStatus("Please select an organization.");
+      \Drupal::messenger()->addStatus($this->t("Please select an organization."));
     }
     else { 
         $config = $this->config('coyote_img_desc.settings');
