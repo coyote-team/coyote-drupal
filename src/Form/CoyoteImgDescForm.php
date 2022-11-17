@@ -113,7 +113,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
         Util::getResourceGroupUri()
       );
       if (is_null($group)) {
-          $form['api_organization']['#field_suffix'] = $this->t("Resource group '".Constants::RESOURCE_GROUP_NAME."' could not be created");
+          $form['api_organization']['#field_suffix'] = $this->t("Resource group '@resourceGroup' could not be created", ['@resourceGroup' => Constants::RESOURCE_GROUP_NAME]);
           $config = $this->config('coyote_img_desc.settings');
           $config->set('api_resource_group', null);
           $config->save();
