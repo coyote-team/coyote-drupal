@@ -112,6 +112,12 @@ class CoyoteImgDescForm extends ConfigFormBase {
         Constants::RESOURCE_GROUP_NAME,
         Util::getResourceGroupUri()
       );
+      if (is_null($group)) {
+          $form['api_organization']['#field_suffix'] = $this->t("Resource group '".Constants::RESOURCE_GROUP_NAME."' could not be created");
+          $config = $this->config('coyote_img_desc.settings');
+          $config->set('api_resource_group', null);
+          $config->save();
+      }
     }
 
     if (!is_null($group)) {
@@ -195,6 +201,17 @@ class CoyoteImgDescForm extends ConfigFormBase {
 
     if (is_null($organizationId)) {
       \Drupal::messenger()->addStatus("Please select an organization.");
+    }
+    else { 
+        $config = $this->config('coyote_img_desc.settings');
+        $storedToken = $config->get('api_token');
+        $storedEndpoint = $config->get('api_endpoint');
+        $storedOrganizationId = $config->get('api_organization');
+
+        if ($endpoint != $storedEndpoint || $token != $storedToken || $organizationId != $storedOrganizationId) { 
+            //reset ResourceGroup
+            $this->verifyResourceGroup($form, $endpoint, $token, $organizationId, null);
+        }
     }
   }
 
