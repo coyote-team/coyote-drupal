@@ -104,7 +104,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
       );
     }
 
-    if (is_null($resourceGroupId && is_null($group))) {
+    if (is_null($resourceGroupId) && is_null($group)) {
       $group = CoyoteApiClientHelperFunctions::createResourceGroup(
         $endpoint,
         $token,
