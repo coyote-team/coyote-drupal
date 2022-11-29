@@ -134,13 +134,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
     // TODO track that no resource group is available
   }
 
-  #[ArrayShape([
-    '#type' => "string",
-    '#title' => "\Drupal\Core\StringTranslation\TranslatableMarkup",
-    '#name' => "string",
-    '#options' => "array|mixed",
-    '#default_value' => "int|null|string"
-  ])] private function getApiOrganizationIdFieldConfig(ProfileModel $profile, ?int $currentId): array
+  private function getApiOrganizationIdFieldConfig(ProfileModel $profile, ?int $currentId): array
   {
     $organizations = $profile->getOrganizations();
     $options = array_reduce($organizations, function(array $carry, OrganizationModel $item): array {
