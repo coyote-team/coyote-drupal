@@ -19,7 +19,10 @@ class NodeViewAlterPostRenderHook implements TrustedCallbackInterface {
 
   public static function hook(Markup $markup, array &$output): string
   {
+    $config = \Drupal::config('coyote_img_desc.settings');
     $hostUri = $output['_coyote_node_url'];
+    $disableParsing = $config->get('disable_coyote_filtering');
+    if ($disableParsing) return $markup;
 
     return ContentParser::replaceImageDescriptions($markup, function(Image $image) use ($hostUri): ?string {
       $resource = Util::getImageResource($image, $hostUri);

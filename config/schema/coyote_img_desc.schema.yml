@@ -14,3 +14,9 @@ coyote_img_desc.settings:
     api_resource_group:
       type: integer
       label: 'API Resource Group'
+    disable_coyote_filtering:
+      type: boolean
+      label: 'Disable Coyote Filtering'
+    ignore_coyote_webhook_calls:
+      type: boolean
+      label: 'Ignore Incoming Coyote Webhook Calls'

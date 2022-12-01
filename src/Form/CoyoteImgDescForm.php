@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Helper\CoyoteMembershipHelper;
 use Drupal\coyote_img_desc\Util;
+use Drupal\coyote_img_desc\DB;
 use JetBrains\PhpStorm\ArrayShape;
 
 class CoyoteImgDescForm extends ConfigFormBase {
@@ -52,9 +53,12 @@ class CoyoteImgDescForm extends ConfigFormBase {
 
     $token = $config->get('api_token');
     $endpoint = $config->get('api_endpoint');
+    $resource_group = $config->get('api_resource_group');
+    $disable_coyote_filtering = $config->get('disable_coyote_filtering');
 
     $profile = null;
     $suffix = '';
+    $log="";
 
     if (self::isDefined($token) && self::isDefined($endpoint)) {
       $profile = CoyoteApiClientHelperFunctions::getProfile($endpoint, $token);
@@ -82,9 +86,36 @@ class CoyoteImgDescForm extends ConfigFormBase {
       $form['api_organization'] = self::getApiOrganizationIdFieldConfig($profile, $storedOrganizationId);
     }
 
+    $form['coyote_warning'] = [
+       '#type' => 'item',
+       '#markup' => '<div class="messages-list messages messages--warning">'.$this->t('Changing the API token or the endpoint or the Organization will clear the local plugin data')."</div>",
+       '#states' => array(
+         'invisible' => array(
+         ':input[name="api_token"]' => array('value' => $token),
+         ':input[name="api_endpoint"]' => array('value' => $endpoint),
+         'select[name="api_organization"]' => array('value' => $storedOrganizationId),
+         ),
+       ),
+    ];
+
+    $log .= "profile:".print_r($profile, true)." storedOrganizationId:".$storedOrganizationId." resource_group:".$resource_group;
     if (!is_null($profile) && !is_null($storedOrganizationId)) {
       $this->verifyResourceGroup($form, $endpoint, $token, $storedOrganizationId, $config->get('api_resource_group'));
     }
+    $form['disable_coyote_filtering'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Disable Coyote filtering during rendering'),
+      '#default_value' => $config->get('disable_coyote_filtering'),
+    ];
+
+    $form['ignore_coyote_webhook_calls'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Ignore incoming Coyote webhook calls'),
+      '#default_value' => $config->get('ignore_coyote_webhook_calls'),
+    ];
+
+
+//    \Drupal::logger('coyote')->notice($log);
 
     return $form;
   }
@@ -97,11 +128,13 @@ class CoyoteImgDescForm extends ConfigFormBase {
     ?int $resourceGroupId
   ) {
     $group = null;
+    $log = "VerifyResourceGroup endpoint: ".$endpoint." token:".$token." organizationId:". $organizationId." ";
 
     if (is_null($resourceGroupId)) {
       $group = CoyoteApiClientHelperFunctions::getResourceGroupByUri(
         $endpoint, $token, $organizationId, Util::getResourceGroupUri()
       );
+      $log .= " group:".print_r($group,true);
     }
 
     if (is_null($resourceGroupId) && is_null($group)) {
@@ -112,8 +145,9 @@ class CoyoteImgDescForm extends ConfigFormBase {
         Constants::RESOURCE_GROUP_NAME,
         Util::getResourceGroupUri()
       );
+      $log .=" Group create C:".Constants::RESOURCE_GROUP_NAME." Uri:". Util::getResourceGroupUri(). " Group:". print_r($group,true);
       if (is_null($group)) {
-          $form['api_organization']['#field_suffix'] = $this->t("Resource group '@resourceGroup' could not be created", ['@resourceGroup' => Constants::RESOURCE_GROUP_NAME]);
+          $form['api_organization']['#field_suffix'] = $this->t("Resource group '@resourceGroup' could not be created", array('@resourceGroup' => Constants::RESOURCE_GROUP_NAME));
           $config = $this->config('coyote_img_desc.settings');
           $config->set('api_resource_group', null);
           $config->save();
@@ -132,8 +166,9 @@ class CoyoteImgDescForm extends ConfigFormBase {
     }
 
     // TODO track that no resource group is available
-  }
+  //  \Drupal::logger('coyote')->notice($log);
 
+  }
   private function getApiOrganizationIdFieldConfig(ProfileModel $profile, ?int $currentId): array
   {
     $organizations = $profile->getOrganizations();
@@ -205,6 +240,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
         if ($endpoint != $storedEndpoint || $token != $storedToken || $organizationId != $storedOrganizationId) { 
             //reset ResourceGroup
             $this->verifyResourceGroup($form, $endpoint, $token, $organizationId, null);
+            DB::truncateResourceTable();
         }
     }
   }
@@ -214,7 +250,9 @@ class CoyoteImgDescForm extends ConfigFormBase {
     $config->set('api_endpoint', $form_state->getValue('api_endpoint'));
     $config->set('api_token', $form_state->getValue('api_token'));
     $config->set('api_organization', $form_state->getValue('api_organization'));
+    $config->set('ignore_coyote_webhook_calls', $form_state->getValue('ignore_coyote_webhook_calls'));
     $config->save();
+    drupal_flush_all_caches();
     parent::submitForm($form, $form_state);
   }
 }
