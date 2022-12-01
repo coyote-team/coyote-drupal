@@ -8,6 +8,11 @@ class DB {
     return $database->delete('image_resource')->execute();
   }
 
+  public static function truncateResourceTable(): int {
+    $database = \Drupal::database();
+    return $database->truncate('image_resource')->execute();
+  }
+
   public static function updateResourceDescription(string $id, string $description) {
     $database = \Drupal::database();
     $database->update('image_resource')

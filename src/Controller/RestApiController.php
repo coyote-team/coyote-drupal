@@ -15,7 +15,13 @@ class RestApiController extends ControllerBase {
   }
 
   public static function callback(): JsonResponse {
+
+    $config = \Drupal::config('coyote_img_desc.settings');
+    $ignore = $config->get('ignore_coyote_webhook_calls');
+    if ($ignore) return new JsonResponse(['status' => 'ignored'], 403);
+
     $ddm = \Drupal::service('devel.dumper');
+
     $request = \Drupal::request();
     $payload = json_decode($request->getContent());
 
