@@ -3,3 +3,5 @@ api_endpoint: 'https://staging.coyote.pics/api/v1'
 api_organization: null
 api_resource_group: null
 disable_coyote_filtering: false
+ignore_coyote_webhook_calls: false
+coyote_process_unpublished_nodes: true

@@ -20,3 +20,6 @@ coyote_img_desc.settings:
     ignore_coyote_webhook_calls:
       type: boolean
       label: 'Ignore Incoming Coyote Webhook Calls'
+    coyote_process_unpublished_nodes:
+      type: boolean
+      label:  'Disable processing unpublished nodes'

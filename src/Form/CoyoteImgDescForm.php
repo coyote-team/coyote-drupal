@@ -114,6 +114,12 @@ class CoyoteImgDescForm extends ConfigFormBase {
       '#default_value' => $config->get('ignore_coyote_webhook_calls'),
     ];
 
+    $form['coyote_process_unpublished_nodes'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Process unpublished nodes'),
+      '#default_value' => $config->get('coyote_process_unpublished_nodes'),
+    ];
+
 
 //    \Drupal::logger('coyote')->notice($log);
 
@@ -250,7 +256,9 @@ class CoyoteImgDescForm extends ConfigFormBase {
     $config->set('api_endpoint', $form_state->getValue('api_endpoint'));
     $config->set('api_token', $form_state->getValue('api_token'));
     $config->set('api_organization', $form_state->getValue('api_organization'));
+    $config->set('disable_coyote_filtering', $form_state->getValue('disable_coyote_filtering'));
     $config->set('ignore_coyote_webhook_calls', $form_state->getValue('ignore_coyote_webhook_calls'));
+    $config->set('coyote_process_unpublished_nodes', $form_state->getValue('coyote_process_unpublished_nodes'));
     $config->save();
     drupal_flush_all_caches();
     parent::submitForm($form, $form_state);
