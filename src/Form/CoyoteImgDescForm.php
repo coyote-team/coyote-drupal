@@ -58,7 +58,6 @@ class CoyoteImgDescForm extends ConfigFormBase {
 
     $profile = null;
     $suffix = '';
-    $log="";
 
     if (self::isDefined($token) && self::isDefined($endpoint)) {
       $profile = CoyoteApiClientHelperFunctions::getProfile($endpoint, $token);
@@ -98,7 +97,6 @@ class CoyoteImgDescForm extends ConfigFormBase {
        ),
     ];
 
-    $log .= "profile:".print_r($profile, true)." storedOrganizationId:".$storedOrganizationId." resource_group:".$resource_group;
     if (!is_null($profile) && !is_null($storedOrganizationId)) {
       $this->verifyResourceGroup($form, $endpoint, $token, $storedOrganizationId, $config->get('api_resource_group'));
     }
@@ -121,8 +119,6 @@ class CoyoteImgDescForm extends ConfigFormBase {
     ];
 
 
-//    \Drupal::logger('coyote')->notice($log);
-
     return $form;
   }
 
@@ -134,13 +130,11 @@ class CoyoteImgDescForm extends ConfigFormBase {
     ?int $resourceGroupId
   ) {
     $group = null;
-    $log = "VerifyResourceGroup endpoint: ".$endpoint." token:".$token." organizationId:". $organizationId." ";
 
     if (is_null($resourceGroupId)) {
       $group = CoyoteApiClientHelperFunctions::getResourceGroupByUri(
         $endpoint, $token, $organizationId, Util::getResourceGroupUri()
       );
-      $log .= " group:".print_r($group,true);
     }
 
     if (is_null($resourceGroupId) && is_null($group)) {
@@ -151,7 +145,6 @@ class CoyoteImgDescForm extends ConfigFormBase {
         Constants::RESOURCE_GROUP_NAME,
         Util::getResourceGroupUri()
       );
-      $log .=" Group create C:".Constants::RESOURCE_GROUP_NAME." Uri:". Util::getResourceGroupUri(). " Group:". print_r($group,true);
       if (is_null($group)) {
           $form['api_organization']['#field_suffix'] = $this->t("Resource group '@resourceGroup' could not be created", array('@resourceGroup' => Constants::RESOURCE_GROUP_NAME));
           $config = $this->config('coyote_img_desc.settings');
@@ -172,7 +165,6 @@ class CoyoteImgDescForm extends ConfigFormBase {
     }
 
     // TODO track that no resource group is available
-  //  \Drupal::logger('coyote')->notice($log);
 
   }
   private function getApiOrganizationIdFieldConfig(ProfileModel $profile, ?int $currentId): array
