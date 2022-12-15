@@ -1,0 +1,9 @@
+coyote_img_desc.admin:
+  route_name: coyote_img_desc.coyote_img_desc_form
+  title: Settings
+  base_route: coyote_img_desc.admin
+
+coyote_img_desc.batch:
+  route_name: coyote_img_desc.coyote_img_batch_form
+  title: Batch Processing
+  base_route: coyote_img_desc.admin
