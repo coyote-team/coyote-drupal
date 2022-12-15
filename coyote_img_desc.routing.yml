@@ -36,3 +36,11 @@ coyote_img_desc.coyote_img_desc_form:
     _title: 'Coyote Image Description Configuration'
   requirements:
     _permission: 'administer site configuration'
+
+coyote_img_desc.coyote_img_batch_form:
+  path: '/admin/config/coyote-img-batch-processing'
+  defaults:
+    _form: '\Drupal\coyote_img_desc\Form\CoyoteImgBatchForm'
+    _title: 'Coyote Image Batch Processing'
+  requirements:
+    _permission: 'administer site configuration'
