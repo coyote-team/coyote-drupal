@@ -25,9 +25,9 @@ class NodeViewAlterPostRenderHook implements TrustedCallbackInterface {
     if ($disableParsing) return $markup;
    
     $isPublished = $output['#node']->isPublished();
-    $coyote_process_unpublished_nodes = $config->get('coyote_process_unpublished_nodes');
+    $coyoteProcessUnpublishedNodes = $config->get('coyote_process_unpublished_nodes');
 
-    if (!$coyote_process_unpublished_nodes && !$isPublished) return $markup;
+    if (!$coyoteProcessUnpublishedNodes && !$isPublished) return $markup;
 
     return ContentParser::replaceImageDescriptions($markup, function(Image $image) use ($hostUri): ?string {
       $resource = Util::getImageResource($image, $hostUri);
