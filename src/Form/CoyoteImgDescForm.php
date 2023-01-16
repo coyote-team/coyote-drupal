@@ -88,13 +88,13 @@ class CoyoteImgDescForm extends ConfigFormBase {
     $form['coyote_warning'] = [
        '#type' => 'item',
        '#markup' => '<div class="messages-list messages messages--warning">'.$this->t('Changing the API token or the endpoint or the Organization will clear the local plugin data')."</div>",
-       '#states' => array(
-         'invisible' => array(
-         ':input[name="api_token"]' => array('value' => $token),
-         ':input[name="api_endpoint"]' => array('value' => $endpoint),
-         'select[name="api_organization"]' => array('value' => $storedOrganizationId),
-         ),
-       ),
+       '#states' => [
+         'invisible' => [
+         ':input[name="api_token"]' => ['value' => $token],
+         ':input[name="api_endpoint"]' => ['value' => $endpoint],
+         'select[name="api_organization"]' => ['value' => $storedOrganizationId],
+         ],
+       ],
     ];
 
     if (!is_null($profile) && !is_null($storedOrganizationId)) {
@@ -146,7 +146,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
         Util::getResourceGroupUri()
       );
       if (is_null($group)) {
-          $form['api_organization']['#field_suffix'] = $this->t("Resource group '@resourceGroup' could not be created", array('@resourceGroup' => Constants::RESOURCE_GROUP_NAME));
+          $form['api_organization']['#field_suffix'] = $this->t("Resource group '@resourceGroup' could not be created", ['@resourceGroup' => Constants::RESOURCE_GROUP_NAME]);
           $config = $this->config('coyote_img_desc.settings');
           $config->set('api_resource_group', null);
           $config->save();
