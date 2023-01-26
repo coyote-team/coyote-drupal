@@ -88,6 +88,7 @@ class CoyoteImgBatchForm extends FormBase {
 
   public function submitForm(array &$form, FormStateInterface $form_state): void {
      $nids = \Drupal::entityQuery('node')->execute();
+     $operations = [];
 
      foreach ($nids as $nid){     
        $operations[] = [['\Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingNodes'], [$nid]];
