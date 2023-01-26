@@ -53,8 +53,6 @@ class CoyoteImgDescForm extends ConfigFormBase {
 
     $token = $config->get('api_token');
     $endpoint = $config->get('api_endpoint');
-    $resource_group = $config->get('api_resource_group');
-    $disable_coyote_filtering = $config->get('disable_coyote_filtering');
 
     $profile = null;
     $suffix = '';
