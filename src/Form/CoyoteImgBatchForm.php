@@ -21,6 +21,10 @@ class CoyoteImgBatchForm extends FormBase {
   /**
    * {@inheritdoc}
    */
+
+  private ?ProfileModel $profile;
+  private ?string $role;
+
   public function getFormId() {
     return $this->t('coyote_img_batch_form');
   }
@@ -30,19 +34,19 @@ class CoyoteImgBatchForm extends FormBase {
     return !is_null($var) && strlen($var) > 0;
   }
 
-  private function getProfileRole(?ProfileModel $profile): ?string
+  private function getProfileRole(): ?string
   {
-    if (is_null($profile)) {
+    if (is_null($this->profile)) {
       return null;
     }
 
-    $highestRole = CoyoteMembershipHelper::getHighestMembershipRole($profile->getMemberships());
+    $highestRole = CoyoteMembershipHelper::getHighestMembershipRole($this->profile->getMemberships());
 
     if (is_null($highestRole)) {
       return null;
     }
 
-    return $this->t("Owner: {$profile->getName()} ({$highestRole})");
+    return $this->t("Owner: {$this->profile->getName()} ({$highestRole})");
   }
 
   /**
@@ -55,21 +59,18 @@ class CoyoteImgBatchForm extends FormBase {
     $resourceGroup = $config->get('api_resource_group');
     $organizationId = $config->get('api_organization');
     if (self::isDefined($token) && self::isDefined($endpoint)) {
-      $profile = CoyoteApiClientHelperFunctions::getProfile($endpoint, $token);
-      $role = $this->getProfileRole($profile);
+      $this->profile = CoyoteApiClientHelperFunctions::getProfile($endpoint, $token);
+      $this->role = $this->getProfileRole();
     }
      
-    $disabled = false;
-    if (!self::isDefined($token) || !self::isDefined($endpoint) || !self::isDefined($organizationId) || !self::isDefined($resourceGroup) || is_null($profile) || is_null($role)) {
-         $disabled=true;
-    }
- 
+    $validConfig = $this->hasValidBatchProcessingConfig();
+
     $form['coyote_message'] = [
        '#type' => 'item',
-        '#markup' => "<strong>".$this->t('Values used'). "</strong><br />".$this->t('Coyote API token:')." ".$token."<br />". $this->t('Coyote API endpoint:') ." ".$endpoint. "<br />" . $this->t('Organization ID:'). " ".$organizationId . "<br />". $this->t('Resource Group:'). " ".$resourceGroup."<br />".$this->t("Permissions:")." ".$role,
+        '#markup' => "<strong>".$this->t('Values used'). "</strong><br />".$this->t('Coyote API token:')." ".$token."<br />". $this->t('Coyote API endpoint:') ." ".$endpoint. "<br />" . $this->t('Organization ID:'). " ".$organizationId . "<br />". $this->t('Resource Group:'). " ".$resourceGroup."<br />".$this->t("Permissions:")." ".$this->role,
     ];
 
-    if ($disabled) {
+    if (!$validConfig) {
        $form['coyote_warning'] = [
           '#type' => 'item',
           '#markup' => "<strong>".  $this->t("Invalid data, correct in Settings")."</strong>",
@@ -79,12 +80,39 @@ class CoyoteImgBatchForm extends FormBase {
 
     $form['batch_processing'] = [
       '#type' => 'submit',
-      '#disabled' => $disabled,
+      '#disabled' => !$validConfig,
       '#value' => $this->t('Batch processing of all images?'),
     ];
 
     return $form;
   }
+
+  private function hasValidBatchProcessingConfig(): bool {
+    $config = $this->config('coyote_img_desc.settings');
+    $token = $config->get('api_token');
+    $endpoint = $config->get('api_endpoint');
+    $resourceGroup = $config->get('api_resource_group');
+    $organizationId = $config->get('api_organization');
+    if (!self::isDefined($token)) { 
+         return false;
+    }
+    if (!self::isDefined($endpoint)) {
+         return false;
+    }
+    if (!self::isDefined($organizationId)) {
+         return false;
+    }
+    if (!self::isDefined($resourceGroup)) {
+         return false;
+    }
+    if (is_null($this->profile)){
+         return false;
+    }
+    if (is_null($this->role)) {
+         return false;
+    }
+     return true;
+  } 
 
   public function submitForm(array &$form, FormStateInterface $form_state): void {
      $nids = \Drupal::entityQuery('node')->execute();
