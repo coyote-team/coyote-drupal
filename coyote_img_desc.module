@@ -11,3 +11,39 @@ function coyote_img_desc_node_view_alter(array &$build, EntityInterface $entity,
   $build['_coyote_node_url'] = $entity->toUrl('canonical', ['absolute' => true])->toString();
   $build['#post_render'][] = [NodeViewAlterPostRenderHook::class, 'hook'];
 }
+
+/*
+*  Implement hook_field_widget_complete_form_alter
+*
+*/
+function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complete_form, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+    if (isset($field_widget_complete_form['#attributes']['class'][0]) && $field_widget_complete_form['#attributes']['class'][0] == "field--type-image") {
+        if (isset($field_widget_complete_form['widget'][0])) {
+            $desc = $field_widget_complete_form['widget'][0]['#description'];
+            if ($desc) {
+                $desc .= " <br />\n";
+            }
+            $desc .= t("The alt-tag of this field is managed by coyote");
+
+            $field_widget_complete_form['widget'][0]['#description'] = $desc;
+        }
+
+    }
+}
+
+/*
+*  Implement hook_form_FORM_ID_alter
+*
+*/
+function coyote_img_desc_form_editor_image_dialog_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+
+    $desc = $form['attributes']['alt']['#description'];
+
+    if ($desc) {
+        $desc .= " <br />\n";
+    }
+    $desc .= "<strong>".t("This is managed by coyote")."</strong>";
+
+   $form['attributes']['alt']['#description'] = $desc;
+}
+
