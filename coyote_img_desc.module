@@ -26,6 +26,8 @@ function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complet
             $desc .= t("The alt-tag of this field is managed by coyote");
 
             $field_widget_complete_form['widget'][0]['#description'] = $desc;
+            $field_widget_complete_form['widget'][0]['#alt_field'] = false;
+            $field_widget_complete_form['widget'][0]['#alt_field_required'] = false;
         }
 
     }
@@ -36,14 +38,15 @@ function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complet
 *
 */
 function coyote_img_desc_form_editor_image_dialog_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-
     $desc = $form['attributes']['alt']['#description'];
 
     if ($desc) {
         $desc .= " <br />\n";
     }
-    $desc .= "<strong>".t("This is managed by coyote")."</strong>";
+    $desc .= "<strong>".t("The alternative text is managed by coyote")."</strong>";
 
-   $form['attributes']['alt']['#description'] = $desc;
+    $form['attributes']['alt']['#description'] = $desc;
+    $form['attributes']['alt']['#required'] = false;
+    $form['attributes']['alt']['#disabled'] = true;
 }
 
