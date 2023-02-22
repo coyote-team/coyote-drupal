@@ -26,7 +26,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return $this->t('coyote_img_desc_config_form');
+    return 'coyote_img_desc_config_form';
   }
 
   private function getProfileSuffix(?ProfileModel $profile): string

@@ -26,7 +26,7 @@ class CoyoteImgBatchForm extends FormBase {
   private ?string $role;
 
   public function getFormId() {
-    return $this->t('coyote_img_batch_form');
+    return 'coyote_img_batch_form';
   }
 
   private static function isDefined(?string $var): bool
