@@ -23,15 +23,23 @@ function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complet
             if ($desc) {
                 $desc .= " <br />\n";
             }
-            $desc .= t("The alt-tag of this field is managed by coyote");
+            $desc .= t("The alternative text of this field is managed by Coyote");
 
             $field_widget_complete_form['widget'][0]['#description'] = $desc;
-            $field_widget_complete_form['widget'][0]['#alt_field'] = false;
             $field_widget_complete_form['widget'][0]['#alt_field_required'] = false;
+            $field_widget_complete_form['#after_build'][] = "coyote_img_desc_image_form_after_build";
         }
 
     }
 }
+
+function coyote_img_desc_image_form_after_build(array $form, \Drupal\Core\Form\FormState $form_state) {
+   $form['widget'][0]['alt']['#attributes']['readonly'] = "readonly";
+   $form['widget'][0]['alt']['#attributes']['style'] = "background: #eeeeee";
+
+   return $form;  
+}
+
 
 /*
 *  Implement hook_form_FORM_ID_alter
@@ -43,9 +51,10 @@ function coyote_img_desc_form_editor_image_dialog_alter(&$form, \Drupal\Core\For
     if ($desc) {
         $desc .= " <br />\n";
     }
-    $desc .= "<strong>".t("The alternative text is managed by coyote")."</strong>";
+    $desc .= "<strong>".t("The alternative text is managed by Coyote")."</strong>";
 
     $form['attributes']['alt']['#description'] = $desc;
     $form['attributes']['alt']['#required'] = false;
-    $form['attributes']['alt']['#disabled'] = true;
+    $form['attributes']['alt']['#attributes']['readonly'] = "readonly";
+    $form['attributes']['alt']['#attributes']['style'] = "background: #eeeeee";
 }
