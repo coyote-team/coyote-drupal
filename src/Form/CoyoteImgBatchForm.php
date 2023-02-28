@@ -136,7 +136,7 @@ class CoyoteImgBatchForm extends FormBase {
   }
   
   public static function batchProcessingEntities($id, $entity, &$context) {
-     $message = 'Proccessing ALL entities to coyote';
+     $message = 'Processing ALL entities to Coyote';
      $results = $context['results'];
    
      $config = \Drupal::config('coyote_img_desc.settings');
@@ -155,18 +155,9 @@ class CoyoteImgBatchForm extends FormBase {
 
         $hostUri = $s->toUrl('canonical', ['absolute' => true])->toString();
     
-        $vm = "";
-        if (isset($build["#view_mode"])) { $vm .= $build["#view_mode"]; }
-           \Drupal::logger('coyote')->notice("4".print_r($hostUri,true). " ".print_r(array_keys($build),true). " vm:".$vm);
-          $output = render($build);
+        $output = render($build);
      }
-     catch (UndefinedLinkTemplateException $e) {
-        $display = false;
-     }
-     catch (InvalidPluginDefinitionException $e) {
-        $display = false;
-     }
-     catch (Exception $e) {
+     catch (UndefinedLinkTemplateException | InvalidPluginDefinitionException | Exception $e) {
         $display = false;
      }
 

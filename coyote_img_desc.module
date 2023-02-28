@@ -3,7 +3,7 @@
 use Drupal\coyote_img_desc\Hook\NodeViewAlterPostRenderHook;
 use Drupal\coyote_img_desc\Hook\EntityViewAlterPostRenderHook;
 use Drupal\coyote_img_desc\Hook\ViewsViewAlterPostRenderHook;
-use Drupal\coyote_img_desc\ViewsRender
+use Drupal\coyote_img_desc\ViewsRender;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\views\ViewExecutable;
@@ -22,7 +22,7 @@ function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output,
   $host = \Drupal::request()->getSchemeAndHttpHost();
   $path = $view->getPath();
 
-  if ($path == null){
+  if (is_null($path)){
      $path = \Drupal\Core\Url::fromRoute('<current>');
   }
   $output['#coyote_node_url'] = $host."/".$view->getPath();
