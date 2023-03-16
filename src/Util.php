@@ -3,10 +3,10 @@
 namespace Drupal\coyote_img_desc;
 
 use Coyote\ContentHelper\Image;
-use Coyote\CoyoteApiClientHelperFunctions;
-use Coyote\Model\ResourceModel;
-use Coyote\Payload\CreateResourcePayload;
-use Coyote\Payload\ResourceRepresentationPayload;
+use PAC_Vendor\Coyote\CoyoteApiClientHelperFunctions;
+use PAC_Vendor\Coyote\Model\ResourceModel;
+use PAC_Vendor\Coyote\Payload\CreateResourcePayload;
+use PAC_Vendor\Coyote\Payload\ResourceRepresentationPayload;
 use Drupal\coyote_img_desc\DB;
 use Drupal\coyote_img_desc\ImageResource;
 

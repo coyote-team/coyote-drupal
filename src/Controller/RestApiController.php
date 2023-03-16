@@ -2,7 +2,7 @@
 
 namespace Drupal\coyote_img_desc\Controller;
 
-use Coyote\CoyoteApiClient;
+use PAC_Vendor\Coyote\CoyoteApiClient;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Hook\RestApiUpdatePostHook;

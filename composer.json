@@ -1,6 +1,38 @@
 {
     "require": {
-        "coyote/coyote-api-client": "^1.0.21",
         "coyote/coyote-php-content-helper": "^1.0.5"
+    },
+    "require-dev": {
+        "coyote/coyote-api-client": "^1.0.26.x-dev",
+        "humbug/php-scoper": "^0.18.2"
+    },
+    "autoload": {
+        "classmap": [
+            "src/",
+            "vendor_prefixed"
+        ]
+    },
+    "scripts": {
+        "prefix-dependencies": [
+            "composer prefix-psr",
+            "composer prefix-guzzlehttp",
+            "composer prefix-monolog",
+            "composer prefix-coyote-api-client"
+        ],
+        "cleanup-vendor": [
+            "rm -rf vendor/guzzlehttp vendor/psr vendor/coyote/coyote-api-client vendor/monolog vendor/humbug vendor/fidry"
+        ],
+        "prefix-psr": [
+            "@php ./vendor/humbug/php-scoper/bin/php-scoper add-prefix --prefix=PAC_Vendor --output-dir=./vendor_prefixed/psr --config=config/scoper.psr.php --force --quiet"
+        ],
+        "prefix-guzzlehttp": [
+            "@php ./vendor/humbug/php-scoper/bin/php-scoper add-prefix --prefix=PAC_Vendor --output-dir=./vendor_prefixed/guzzlehttp --config=config/scoper.guzzlehttp.php --force --quiet"
+        ],
+        "prefix-monolog": [
+            "@php ./vendor/humbug/php-scoper/bin/php-scoper add-prefix --prefix=PAC_Vendor --output-dir=./vendor_prefixed/monolog --config=config/scoper.monolog.php --force --quiet"
+        ],
+        "prefix-coyote-api-client": [
+            "@php ./vendor/humbug/php-scoper/bin/php-scoper add-prefix --prefix=PAC_Vendor --output-dir=./vendor_prefixed/coyote-api-client --config=config/scoper.coyote-api-client.php --force --quiet"
+        ]
     }
 }

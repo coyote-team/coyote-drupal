@@ -4,9 +4,9 @@ namespace Drupal\coyote_img_desc\Form;
 
 require_once( __DIR__ . '/../../vendor/autoload.php');
 
-use Coyote\CoyoteApiClientHelperFunctions;
-use Coyote\Model\OrganizationModel;
-use Coyote\Model\ProfileModel;
+use PAC_Vendor\Coyote\CoyoteApiClientHelperFunctions;
+use PAC_Vendor\Coyote\Model\OrganizationModel;
+use PAC_Vendor\Coyote\Model\ProfileModel;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\coyote_img_desc\Constants;

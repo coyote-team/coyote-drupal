@@ -4,16 +4,15 @@ namespace Drupal\coyote_img_desc\Form;
 
 require_once( __DIR__ . '/../../vendor/autoload.php');
 
-use Coyote\CoyoteApiClientHelperFunctions;
-use Coyote\Model\OrganizationModel;
-use Coyote\Model\ProfileModel;
+use PAC_Vendor\Coyote\CoyoteApiClientHelperFunctions;
+use PAC_Vendor\Coyote\Model\OrganizationModel;
+use PAC_Vendor\Coyote\Model\ProfileModel;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Helper\CoyoteMembershipHelper;
 use Drupal\coyote_img_desc\Util;
 use Drupal\coyote_img_desc\DB;
-use JetBrains\PhpStorm\ArrayShape;
 
 class CoyoteImgDescForm extends ConfigFormBase {
 
