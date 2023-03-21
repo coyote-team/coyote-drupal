@@ -74,7 +74,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Coyote API endpoint:'),
       '#default_value' => $config->get('api_endpoint'),
-      '#description' => $this->t('For example: "https://live.coyote.pics/api/v1/"'),
+      '#description' => $this->t('For example: "https://live.coyote.pics"'),
     ];
 
     $storedOrganizationId = $config->get('api_organization');
@@ -205,9 +205,11 @@ class CoyoteImgDescForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $endpoint = $form_state->getValue('api_endpoint');
+    $endpoint = Util::getSuffixedApiEndpoint($form_state->getValue('api_endpoint'));
     $token = $form_state->getValue('api_token');
     $organizationId = $form_state->getValue('api_organization');
+
+    \Drupal::logger(Constants::MODULE_NAME)->debug('Getting profile using @endpoint and @token', ['@endpoint' => $endpoint, '@token' => $token]);
 
     $profile = CoyoteApiClientHelperFunctions::getProfile($endpoint, $token);
 
@@ -243,6 +245,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
 
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $config = $this->config('coyote_img_desc.settings');
+
     $config->set('api_endpoint', $form_state->getValue('api_endpoint'));
     $config->set('api_token', $form_state->getValue('api_token'));
     $config->set('api_organization', $form_state->getValue('api_organization'));
@@ -250,7 +253,9 @@ class CoyoteImgDescForm extends ConfigFormBase {
     $config->set('ignore_coyote_webhook_calls', $form_state->getValue('ignore_coyote_webhook_calls'));
     $config->set('coyote_process_unpublished_nodes', $form_state->getValue('coyote_process_unpublished_nodes'));
     $config->save();
+
     drupal_flush_all_caches();
+
     parent::submitForm($form, $form_state);
   }
 }

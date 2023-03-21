@@ -1,8 +1,10 @@
 <?php
 
+use Drupal\Core\Url;
 use Drupal\coyote_img_desc\Hook\NodeViewAlterPostRenderHook;
 use Drupal\coyote_img_desc\Hook\EntityViewAlterPostRenderHook;
 use Drupal\coyote_img_desc\Hook\ViewsViewAlterPostRenderHook;
+use Drupal\coyote_img_desc\Util;
 use Drupal\coyote_img_desc\ViewsRender;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -22,12 +24,11 @@ function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output,
   $path = $view->getPath();
 
   if (is_null($path)){
-     $path = \Drupal\Core\Url::fromRoute('<current>');
+     $path = Url::fromRoute('<current>');
   }
 
-  $output['#coyote_node_url'] = $host."/".$view->getPath();
+  $output['#coyote_node_url'] = $host."/" . $path;
   $output['#post_render'][] = [ViewsViewAlterPostRenderHook::class, 'hook'];
-
 }
 
 /*
@@ -49,7 +50,8 @@ function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complet
         $desc .= " <br />\n";
     }
 
-    $desc .= t("The alternative text of this field is managed by Coyote");
+    $link = Util::getCoyoteLink();
+    $desc .= t("Image alternative text descriptions are managed by {$link}");
 
     $field_widget_complete_form['widget'][0]['#description'] = $desc;
     $field_widget_complete_form['widget'][0]['#alt_field_required'] = false;
@@ -74,7 +76,10 @@ function coyote_img_desc_form_editor_image_dialog_alter(&$form, \Drupal\Core\For
         $desc .= " <br />\n";
     }
 
-    $desc .= "<strong>".t("The alternative text is managed by Coyote")."</strong>";
+    $link = Util::getCoyoteLink();
+    $text = t("Image alternative text descriptions are managed by {$link}");
+
+    $desc .= "<strong>".t($text)."</strong>";
 
     $form['attributes']['alt']['#description'] = $desc;
     $form['attributes']['alt']['#required'] = false;
