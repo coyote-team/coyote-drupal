@@ -15,7 +15,7 @@ class RestApiUpdatePostHook {
     $representation = $update->getTopRepresentationByMetum(Constants::METUM);
 
     if (is_null($representation)) {
-      // TODO log that this contained no relevant update
+      \Drupal::logger(Constants::MODULE_NAME)->warning('Update @update contained no relevant data.', ['@update' => $update]);
       return false;
     }
 

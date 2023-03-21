@@ -18,15 +18,14 @@ function coyote_img_desc_entity_view_alter(array &$build, EntityInterface $entit
 }
 
 function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache) {
-
   $host = \Drupal::request()->getSchemeAndHttpHost();
   $path = $view->getPath();
 
   if (is_null($path)){
      $path = \Drupal\Core\Url::fromRoute('<current>');
   }
-  $output['#coyote_node_url'] = $host."/".$view->getPath();
 
+  $output['#coyote_node_url'] = $host."/".$view->getPath();
   $output['#post_render'][] = [ViewsViewAlterPostRenderHook::class, 'hook'];
 
 }
@@ -36,20 +35,25 @@ function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output,
 *
 */
 function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complete_form, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
-    if (isset($field_widget_complete_form['#attributes']['class'][0]) && $field_widget_complete_form['#attributes']['class'][0] == "field--type-image") {
-        if (isset($field_widget_complete_form['widget'][0])) {
-            $desc = $field_widget_complete_form['widget'][0]['#description'];
-            if ($desc) {
-                $desc .= " <br />\n";
-            }
-            $desc .= t("The alternative text of this field is managed by Coyote");
-
-            $field_widget_complete_form['widget'][0]['#description'] = $desc;
-            $field_widget_complete_form['widget'][0]['#alt_field_required'] = false;
-            $field_widget_complete_form['#after_build'][] = "coyote_img_desc_image_form_after_build";
-        }
-
+    if (
+      !isset($field_widget_complete_form['#attributes']['class'][0]) ||
+      $field_widget_complete_form['#attributes']['class'][0] !== "field--type-image" ||
+      !isset($field_widget_complete_form['widget'][0])
+    ) {
+      return;
     }
+
+    $desc = $field_widget_complete_form['widget'][0]['#description'];
+
+    if ($desc) {
+        $desc .= " <br />\n";
+    }
+
+    $desc .= t("The alternative text of this field is managed by Coyote");
+
+    $field_widget_complete_form['widget'][0]['#description'] = $desc;
+    $field_widget_complete_form['widget'][0]['#alt_field_required'] = false;
+    $field_widget_complete_form['#after_build'][] = "coyote_img_desc_image_form_after_build";
 }
 
 function coyote_img_desc_image_form_after_build(array $form, \Drupal\Core\Form\FormState $form_state) {
@@ -58,7 +62,6 @@ function coyote_img_desc_image_form_after_build(array $form, \Drupal\Core\Form\F
 
    return $form;  
 }
-
 
 /*
 *  Implement hook_form_FORM_ID_alter
@@ -70,6 +73,7 @@ function coyote_img_desc_form_editor_image_dialog_alter(&$form, \Drupal\Core\For
     if ($desc) {
         $desc .= " <br />\n";
     }
+
     $desc .= "<strong>".t("The alternative text is managed by Coyote")."</strong>";
 
     $form['attributes']['alt']['#description'] = $desc;

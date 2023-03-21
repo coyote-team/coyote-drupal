@@ -12,7 +12,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Helper\CoyoteMembershipHelper;
 use Drupal\coyote_img_desc\Util;
-use Drupal\coyote_img_desc\DB;
 use Drupal\node\Entity\Node;
 use Coyote\ContentHelper;
 use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
@@ -75,7 +74,7 @@ class CoyoteImgBatchForm extends FormBase {
     if (!$validConfig) {
        $form['coyote_warning'] = [
           '#type' => 'item',
-          '#markup' => "<strong>".  $this->t("Invalid data, correct in Settings")."</strong>",
+          '#markup' => "<strong>".  $this->t("Invalid configuration, please verify the settings are correct.")."</strong>",
        ];
           
     }
@@ -83,7 +82,7 @@ class CoyoteImgBatchForm extends FormBase {
     $form['batch_processing'] = [
       '#type' => 'submit',
       '#disabled' => !$validConfig,
-      '#value' => $this->t('Batch processing of all images?'),
+      '#value' => $this->t('Batch process all images through Coyote'),
     ];
 
     return $form;
@@ -95,25 +94,19 @@ class CoyoteImgBatchForm extends FormBase {
     $endpoint = $config->get('api_endpoint');
     $resourceGroup = $config->get('api_resource_group');
     $organizationId = $config->get('api_organization');
-    if (!self::isDefined($token)) { 
+
+    if (
+      !self::isDefined($token) ||
+      !self::isDefined($endpoint) ||
+      !self::isDefined($organizationId) ||
+      !self::isDefined($resourceGroup) ||
+      is_null($this->profile) ||
+      is_null($this->role)
+    ) {
          return false;
     }
-    if (!self::isDefined($endpoint)) {
-         return false;
-    }
-    if (!self::isDefined($organizationId)) {
-         return false;
-    }
-    if (!self::isDefined($resourceGroup)) {
-         return false;
-    }
-    if (is_null($this->profile)){
-         return false;
-    }
-    if (is_null($this->role)) {
-         return false;
-    }
-     return true;
+
+    return true;
   } 
 
   public function submitForm(array &$form, FormStateInterface $form_state): void {
@@ -126,8 +119,9 @@ class CoyoteImgBatchForm extends FormBase {
           $operations[] = [['\Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingEntities'], [$id, $entity]];
         }
      }
+
      $batch = [
-          'title' => $this->t('Batch processing All Images ...'),
+          'title' => $this->t('Batch processing all images...'),
           'operations' => $operations,
           'finished' => ['Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingEntitiesFinished'],
      ];
@@ -135,33 +129,27 @@ class CoyoteImgBatchForm extends FormBase {
      batch_set($batch);
   }
   
-  public static function batchProcessingEntities($id, $entity, &$context) {
-     $message = 'Processing ALL entities to Coyote';
+  public static function batchProcessingEntities($id, $entity, &$context): bool {
+     $message = 'Processing all available entities...';
      $results = $context['results'];
    
      $config = \Drupal::config('coyote_img_desc.settings');
 
      $entity_type = $entity;
      $view_mode = 'default';
-     $display = true;
 
      try {
-
         $viewBuilder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
         $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
         $s = $storage->load($id);
 
         $build = $viewBuilder->view($s, $view_mode);
-
         $hostUri = $s->toUrl('canonical', ['absolute' => true])->toString();
-    
         $output = render($build);
+     } catch (UndefinedLinkTemplateException | InvalidPluginDefinitionException | Exception $e) {
+       \Drupal::logger(Constants::MODULE_NAME)->warning(`Exception during entity processing: {$e->getMessage()}`);
+        return false;
      }
-     catch (UndefinedLinkTemplateException | InvalidPluginDefinitionException | Exception $e) {
-        $display = false;
-     }
-
-     if (!$display) return;
 
      $isPublished = true;
  
@@ -171,14 +159,17 @@ class CoyoteImgBatchForm extends FormBase {
 
      $coyoteProcessUnpublishedNodes = $config->get('coyote_process_unpublished_nodes');
 
-     if (!$coyoteProcessUnpublishedNodes && !$isPublished) return false;
+     if (!$coyoteProcessUnpublishedNodes && !$isPublished) {
+       return false;
+     }
+
      $contentHelper = new ContentHelper($output);
 
      $images = $contentHelper->getImages();
      foreach($images as $image) {
          $resource = Util::getImageResource($image, $hostUri);
          if ($resource == null) {
-             \Drupal::logger('coyote')->warning(t('@image not processed', ['@image' => $image]));
+             \Drupal::logger(Constants::MODULE_NAME)->warning(t('Unable to process image @image', ['@image' => $image]));
          }
      }
 

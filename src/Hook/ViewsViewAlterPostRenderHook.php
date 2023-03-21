@@ -23,8 +23,9 @@ class ViewsViewAlterPostRenderHook implements TrustedCallbackInterface {
     $hostUri = $output['#coyote_node_url'];
     unset ($output['#coyote_node_url']);
 
-    $disableParsing = $config->get('disable_coyote_filtering');
-    if ($disableParsing) return $markup;
+    if ($config->get('disable_coyote_filtering')) {
+      return $markup;
+    }
    
     return ContentParser::replaceImageDescriptions($markup, function(Image $image) use ($hostUri): ?string {
       $resource = Util::getImageResource($image, $hostUri);
