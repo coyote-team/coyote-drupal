@@ -11,3 +11,50 @@ function coyote_img_desc_node_view_alter(array &$build, EntityInterface $entity,
   $build['_coyote_node_url'] = $entity->toUrl('canonical', ['absolute' => true])->toString();
   $build['#post_render'][] = [NodeViewAlterPostRenderHook::class, 'hook'];
 }
+
+/*
+*  Implement hook_field_widget_complete_form_alter
+*
+*/
+function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complete_form, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+    if (isset($field_widget_complete_form['#attributes']['class'][0]) && $field_widget_complete_form['#attributes']['class'][0] == "field--type-image") {
+        if (isset($field_widget_complete_form['widget'][0])) {
+            $desc = $field_widget_complete_form['widget'][0]['#description'];
+            if ($desc) {
+                $desc .= " <br />\n";
+            }
+            $desc .= t("The alternative text of this field is managed by Coyote");
+
+            $field_widget_complete_form['widget'][0]['#description'] = $desc;
+            $field_widget_complete_form['widget'][0]['#alt_field_required'] = false;
+            $field_widget_complete_form['#after_build'][] = "coyote_img_desc_image_form_after_build";
+        }
+
+    }
+}
+
+function coyote_img_desc_image_form_after_build(array $form, \Drupal\Core\Form\FormState $form_state) {
+   $form['widget'][0]['alt']['#attributes']['readonly'] = "readonly";
+   $form['widget'][0]['alt']['#attributes']['style'] = "background: #eeeeee";
+
+   return $form;  
+}
+
+
+/*
+*  Implement hook_form_FORM_ID_alter
+*
+*/
+function coyote_img_desc_form_editor_image_dialog_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+    $desc = $form['attributes']['alt']['#description'];
+
+    if ($desc) {
+        $desc .= " <br />\n";
+    }
+    $desc .= "<strong>".t("The alternative text is managed by Coyote")."</strong>";
+
+    $form['attributes']['alt']['#description'] = $desc;
+    $form['attributes']['alt']['#required'] = false;
+    $form['attributes']['alt']['#attributes']['readonly'] = "readonly";
+    $form['attributes']['alt']['#attributes']['style'] = "background: #eeeeee";
+}
