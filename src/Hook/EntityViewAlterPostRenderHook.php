@@ -22,18 +22,21 @@ class EntityViewAlterPostRenderHook implements TrustedCallbackInterface {
     $config = \Drupal::config('coyote_img_desc.settings');
     $hostUri = $output['#coyote_node_url'];
     unset ($output['#coyote_node_url']);
-
     $disableParsing = $config->get('disable_coyote_filtering');
-    if (!$hostUri || $disableParsing) return $markup;
+
+    if (!$hostUri || $disableParsing) {
+      return $markup;
+    }
    
     $isPublished = true;
 
     if ($output['#node'] ) {
     	$isPublished = $output['#node']->isPublished();
-    } 
-    $coyoteProcessUnpublishedNodes = $config->get('coyote_process_unpublished_nodes');
+    }
 
-    if (!$coyoteProcessUnpublishedNodes && !$isPublished) return $markup;
+    if (!$config->get('coyote_process_unpublished_nodes') && !$isPublished) {
+      return $markup;
+    }
 
     return ContentParser::replaceImageDescriptions($markup, function(Image $image) use ($hostUri): ?string {
       $resource = Util::getImageResource($image, $hostUri);

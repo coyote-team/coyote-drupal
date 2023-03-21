@@ -20,14 +20,10 @@ class RestApiController extends ControllerBase {
     $ignore = $config->get('ignore_coyote_webhook_calls');
     if ($ignore) return new JsonResponse(['status' => 'ignored'], 403);
 
-    $ddm = \Drupal::service('devel.dumper');
-
     $request = \Drupal::request();
     $payload = json_decode($request->getContent());
 
     $update = CoyoteApiClient::parseWebHookResourceUpdate($payload);
-
-    $ddm->debug(['update', $update]);
 
     $result = RestApiUpdatePostHook::hook($update);
 
