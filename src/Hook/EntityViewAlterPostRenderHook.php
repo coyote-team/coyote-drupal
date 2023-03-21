@@ -8,23 +8,29 @@ use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\coyote_img_desc\ContentParser;
 use Drupal\coyote_img_desc\Util;
 
-class NodeViewAlterPostRenderHook implements TrustedCallbackInterface {
+class EntityViewAlterPostRenderHook implements TrustedCallbackInterface {
 
   /**
    * @inheritDoc
    */
-  public static function trustedCallbacks(): array {
+  public static function trustedCallbacks() {
     return ['hook'];
   }
 
-  public static function hook(Markup $markup, array &$output): string
+  public static function hook(string $markup, array $output): string
   {
     $config = \Drupal::config('coyote_img_desc.settings');
-    $hostUri = $output['_coyote_node_url'];
+    $hostUri = $output['#coyote_node_url'];
+    unset ($output['#coyote_node_url']);
+
     $disableParsing = $config->get('disable_coyote_filtering');
-    if ($disableParsing) return $markup;
+    if (!$hostUri || $disableParsing) return $markup;
    
-    $isPublished = $output['#node']->isPublished();
+    $isPublished = true;
+
+    if ($output['#node'] ) {
+    	$isPublished = $output['#node']->isPublished();
+    } 
     $coyoteProcessUnpublishedNodes = $config->get('coyote_process_unpublished_nodes');
 
     if (!$coyoteProcessUnpublishedNodes && !$isPublished) return $markup;

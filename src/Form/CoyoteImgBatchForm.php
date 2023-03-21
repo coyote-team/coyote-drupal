@@ -15,6 +15,8 @@ use Drupal\coyote_img_desc\Util;
 use Drupal\coyote_img_desc\DB;
 use Drupal\node\Entity\Node;
 use Coyote\ContentHelper;
+use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 
 class CoyoteImgBatchForm extends FormBase {
 
@@ -115,39 +117,58 @@ class CoyoteImgBatchForm extends FormBase {
   } 
 
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-     $nids = \Drupal::entityQuery('node')->execute();
+     $entities = array_keys(\Drupal::entityTypeManager()->getDefinitions());
      $operations = [];
 
-     foreach ($nids as $nid){     
-       $operations[] = [['\Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingNodes'], [$nid]];
+     foreach ($entities as $entity){  
+        $ids = \Drupal::entityQuery($entity)->execute();
+        foreach ($ids as $id){     
+          $operations[] = [['\Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingEntities'], [$id, $entity]];
+        }
      }
      $batch = [
-          'title' => $this->t('Batch processing All Nodes ...'),
+          'title' => $this->t('Batch processing All Images ...'),
           'operations' => $operations,
-          'finished' => ['Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingNodesFinished'],
-      ];
-      batch_set($batch);
+          'finished' => ['Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingEntitiesFinished'],
+     ];
+
+     batch_set($batch);
   }
   
-  public function batchProcessingNodes($nid, &$context) {
-     $message = 'Proccessing ALL nodes to coyote';
-
+  public static function batchProcessingEntities($id, $entity, &$context) {
+     $message = 'Processing ALL entities to Coyote';
      $results = $context['results'];
    
      $config = \Drupal::config('coyote_img_desc.settings');
 
-     $entity_type = 'node';
+     $entity_type = $entity;
      $view_mode = 'default';
+     $display = true;
 
-     $viewBuilder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
-     $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
-     $node = $storage->load($nid);
-     $build = $viewBuilder->view($node, $view_mode);
-     $build['_coyote_node_url'] = $node->toUrl('canonical', ['absolute' => true])->toString();
-     $hostUri = $node->toUrl('canonical', ['absolute' => true])->toString();
-     $output = render($build);
+     try {
 
-     $isPublished = $node->isPublished();
+        $viewBuilder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
+        $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
+        $s = $storage->load($id);
+
+        $build = $viewBuilder->view($s, $view_mode);
+
+        $hostUri = $s->toUrl('canonical', ['absolute' => true])->toString();
+    
+        $output = render($build);
+     }
+     catch (UndefinedLinkTemplateException | InvalidPluginDefinitionException | Exception $e) {
+        $display = false;
+     }
+
+     if (!$display) return;
+
+     $isPublished = true;
+ 
+     if (method_exists($s, "isPublished")) {
+        $isPublished = $s->isPublished();
+     }
+
      $coyoteProcessUnpublishedNodes = $config->get('coyote_process_unpublished_nodes');
 
      if (!$coyoteProcessUnpublishedNodes && !$isPublished) return false;
@@ -161,20 +182,19 @@ class CoyoteImgBatchForm extends FormBase {
          }
      }
 
-     $results[] = $nid;
+     $results[] = $id;
 
      $context['message'] = $message;
      $context['results'] = $results;
-
   }
 
-  public static function batchProcessingNodesFinished($success, $results, $operations) {
+  public static function batchProcessingEntitiesFinished($success, $results, $operations) {
     // The 'success' parameter means no fatal PHP errors were detected. All
     // other error management should be handled using 'results'.
     if ($success) {
         $message = \Drupal::translation()->formatPlural(
             count($results),
-            'One node processed.', '@count nodes processed.'
+            'One entity processed.', '@count entities processed.'
         );
     }
     else {
@@ -182,5 +202,5 @@ class CoyoteImgBatchForm extends FormBase {
     }
     \Drupal::messenger()->addStatus($message);
   }
-}
 
+}

@@ -1,15 +1,34 @@
 <?php
 
 use Drupal\coyote_img_desc\Hook\NodeViewAlterPostRenderHook;
+use Drupal\coyote_img_desc\Hook\EntityViewAlterPostRenderHook;
+use Drupal\coyote_img_desc\Hook\ViewsViewAlterPostRenderHook;
+use Drupal\coyote_img_desc\ViewsRender;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\cache\CachePluginBase;
 
 require_once(__DIR__ . '/vendor/autoload.php');
 
-function coyote_img_desc_node_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void
+function coyote_img_desc_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void
 {
-  $build['_coyote_node_url'] = $entity->toUrl('canonical', ['absolute' => true])->toString();
-  $build['#post_render'][] = [NodeViewAlterPostRenderHook::class, 'hook'];
+  $build['#coyote_node_url'] = $entity->toUrl('canonical', ['absolute' => true])->toString();
+  $build['#post_render'][] = [EntityViewAlterPostRenderHook::class, 'hook'];
+}
+
+function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache) {
+
+  $host = \Drupal::request()->getSchemeAndHttpHost();
+  $path = $view->getPath();
+
+  if (is_null($path)){
+     $path = \Drupal\Core\Url::fromRoute('<current>');
+  }
+  $output['#coyote_node_url'] = $host."/".$view->getPath();
+
+  $output['#post_render'][] = [ViewsViewAlterPostRenderHook::class, 'hook'];
+
 }
 
 /*
