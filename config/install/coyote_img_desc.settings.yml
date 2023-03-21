@@ -1,5 +1,5 @@
 api_token: ''
-api_endpoint: 'https://staging.coyote.pics/api/v1'
+api_endpoint: 'https://staging.coyote.pics'
 api_organization: null
 api_resource_group: null
 disable_coyote_filtering: false

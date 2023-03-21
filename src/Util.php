@@ -65,7 +65,7 @@ class Util {
   {
     $config = \Drupal::config('coyote_img_desc.settings');
     $token = $config->get('api_token');
-    $endpoint = $config->get('api_endpoint');
+    $endpoint = Util::getSuffixedApiEndpoint();
 
     if(!self::isDefined($token) || !self::isDefined($endpoint)) {
       return null;
@@ -104,6 +104,28 @@ class Util {
   public static function getImageResource(Image $image, ?string $hostUri = null): ?ImageResource
   {
     return self::getImageResourceFromDB($image) ?? self::getImageResourceFromAPI($image, $hostUri);
+  }
+
+  public static function getCoyoteLink(): string {
+    $config = \Drupal::config('coyote_img_desc.settings');
+    $endpoint = $config->get('api_endpoint');
+
+    if (!Util::isDefined($endpoint)) {
+      return 'Coyote';
+    }
+
+    return sprintf('<a href="%s">Coyote</a>', $endpoint);
+  }
+
+  public static function getSuffixedApiEndpoint(?string $endpoint = null): ?string {
+    $config = \Drupal::config('coyote_img_desc.settings');
+    $endpoint = $endpoint ?? $config->get('api_endpoint');
+
+    if (!Util::isDefined($endpoint)) {
+      return null;
+    }
+
+    return sprintf("%s/api/v1/", $endpoint);
   }
 
   private static function isDefined(string $var): bool

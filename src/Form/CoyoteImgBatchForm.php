@@ -56,7 +56,7 @@ class CoyoteImgBatchForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $config = $this->config('coyote_img_desc.settings');
     $token = $config->get('api_token');
-    $endpoint = $config->get('api_endpoint');
+    $endpoint = Util::getSuffixedApiEndpoint();
     $resourceGroup = $config->get('api_resource_group');
     $organizationId = $config->get('api_organization');
     if (self::isDefined($token) && self::isDefined($endpoint)) {
@@ -91,7 +91,7 @@ class CoyoteImgBatchForm extends FormBase {
   private function hasValidBatchProcessingConfig(): bool {
     $config = $this->config('coyote_img_desc.settings');
     $token = $config->get('api_token');
-    $endpoint = $config->get('api_endpoint');
+    $endpoint = Util::getSuffixedApiEndpoint();
     $resourceGroup = $config->get('api_resource_group');
     $organizationId = $config->get('api_organization');
 
