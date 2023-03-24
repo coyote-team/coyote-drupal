@@ -18,7 +18,11 @@
       const selector = 'form.ck-text-alternative-form';
       mutation.addedNodes
         .forEach(node => {
-          if (node.nodeType !== Node.ELEMENT_NODE || !node.matches(selector)) {
+          if (
+              node.nodeType !== Node.ELEMENT_NODE ||
+              !node.matches(selector) ||
+              node.dataset.coyoteHooked
+          ) {
             return;
           }
 
@@ -33,12 +37,13 @@
           $.ajax(`${document.location.protocol}//${document.location.host}/coyote/get_info`, {
             data: { url : lastClickedImage.src }
           }).done(data => {
-            console.debug(data);
             input.value = data.alt;
             node.insertAdjacentHTML(
               "beforeend",
               `<div class="coyote-info-message">The alternative text is managed by ${data.link}.</div>`
             );
+
+            node.dataset.coyoteHooked = "true";
           })
         });
     }

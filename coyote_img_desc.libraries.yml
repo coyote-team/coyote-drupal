@@ -2,6 +2,9 @@ ckeditor5:
   version: VERSION
   js:
     js/ckeditor5_coyote_alt_info.js: {preprocess: true, minified: false}
+  css:
+    theme:
+      css/ckeditor5_coyote_alt_info.css: {}
   dependencies:
     - core/drupal
     - ckeditor5/ckeditor5
