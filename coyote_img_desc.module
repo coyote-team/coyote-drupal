@@ -17,6 +17,7 @@ function coyote_img_desc_entity_view_alter(array &$build, EntityInterface $entit
 {
   $build['#coyote_node_url'] = $entity->toUrl('canonical', ['absolute' => true])->toString();
   $build['#post_render'][] = [EntityViewAlterPostRenderHook::class, 'hook'];
+  $build['#attached']['library'][] = 'coyote_img_desc/ckeditor5';
 }
 
 function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache) {

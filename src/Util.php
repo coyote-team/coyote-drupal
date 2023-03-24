@@ -101,12 +101,25 @@ class Util {
     return self::createImageResourceFromCoyoteResource($image, $resource);
   }
 
+  public static function getResourceLink(ImageResource $resource): string
+  {
+    $config = \Drupal::config('coyote_img_desc.settings');
+    $endpoint = $config->get('api_endpoint');
+    $org_id = $config->get('api_organization');
+    return sprintf('<a href="%s/organizations/%s/resources/%d">Coyote</a>', $endpoint, $org_id, $resource->getCoyoteId());
+  }
+
   public static function getImageResource(Image $image, ?string $hostUri = null): ?ImageResource
   {
     return self::getImageResourceFromDB($image) ?? self::getImageResourceFromAPI($image, $hostUri);
   }
 
-  public static function getCoyoteLink(): string {
+  public static function getImageResourceByUrl(string $url): ?ImageResource
+  {
+    return self::getImageResource(new Image($url, ''));
+  }
+
+  public static function getCoyoteLink(?string $suffix = null): string {
     $config = \Drupal::config('coyote_img_desc.settings');
     $endpoint = $config->get('api_endpoint');
 
@@ -125,7 +138,7 @@ class Util {
       return null;
     }
 
-    return sprintf("%s/api/v1/", $endpoint);
+    return sprintf("%s/api/v1", $endpoint);
   }
 
   private static function isDefined(string $var): bool
