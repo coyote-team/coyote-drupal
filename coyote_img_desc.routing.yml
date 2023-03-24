@@ -29,6 +29,16 @@ coyote_img_desc.import:
     _access: 'TRUE'
 #    _permission: 'administer site configuration'
 
+coyote_img_desc.get_info:
+  path: '/coyote/get_info'
+  defaults:
+    _controller: '\Drupal\coyote_img_desc\Controller\RestApiController::get_info'
+    _title: 'Request resource details'
+  methods:
+    ['OPTIONS', 'GET', 'HEAD']
+  requirements:
+    _access: 'TRUE'
+
 coyote_img_desc.coyote_img_desc_form:
   path: '/admin/config/coyote-img-desc-configuration'
   defaults:

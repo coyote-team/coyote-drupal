@@ -30,7 +30,7 @@ class EntityViewAlterPostRenderHook implements TrustedCallbackInterface {
    
     $isPublished = true;
 
-    if ($output['#node'] ) {
+    if (in_array('#node', $output) && $output['#node']) {
     	$isPublished = $output['#node']->isPublished();
     }
 

@@ -52,7 +52,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
     $config = $this->config('coyote_img_desc.settings');
 
     $token = $config->get('api_token');
-    $endpoint = $config->get('api_endpoint');
+    $endpoint = Util::getSuffixedApiEndpoint($config->get('api_endpoint'));
 
     $profile = null;
     $suffix = '';
