@@ -7,5 +7,6 @@ ckeditor5:
       css/ckeditor5_coyote_alt_info.css: {}
   dependencies:
     - core/drupal
+    - core/drupalSettings
     - ckeditor5/ckeditor5
     - ckeditor5/ckeditor5.image
