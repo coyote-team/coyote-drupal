@@ -1,6 +1,10 @@
-(function (Drupal, once, $) {
+(function (Drupal, settings, once, $) {
 
   'use strict';
+
+  if (!settings.path.currentPathIsAdmin) {
+    return;
+  }
 
   window.addEventListener('load', () => {
     if (!('MutationObserver') in window) {
@@ -84,4 +88,4 @@
     trackMutations('.ck, .ck-content', processImageMutation);
   })
 
-}(Drupal, once, jQuery));
+}(Drupal, drupalSettings, once, jQuery));

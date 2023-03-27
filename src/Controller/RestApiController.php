@@ -33,6 +33,11 @@ class RestApiController extends ControllerBase {
   public static function get_info(): JsonResponse {
     $request = \Drupal::request();
 
+    if (!\Drupal::service('router.admin_context')->isAdminRoute()) {
+      \Drupal::logger(Constants::MODULE_NAME)->warning("Calling get_info() from non-admin page!");
+      return new JsonResponse(['status' => 'Forbidden'], 403);
+    }
+
     $url = $request->query->get('url');
 
     if (!is_string($url) || !strlen($url)) {
