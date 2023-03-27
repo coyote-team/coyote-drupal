@@ -11,6 +11,8 @@ use Drupal\coyote_img_desc\DB;
 use Drupal\coyote_img_desc\ImageResource;
 
 class Util {
+  private const ENDPOINT_PATTERN = '/^https\:\/\/[a-z]+\.coyote\.pics\/?/';
+
   private static function getImageResourceFromDB(Image $image): ?ImageResource
   {
     $sha1 = sha1($image->getSrc());
@@ -106,6 +108,12 @@ class Util {
     $config = \Drupal::config('coyote_img_desc.settings');
     $endpoint = $config->get('api_endpoint');
     $org_id = $config->get('api_organization');
+
+    if (!Util::isDefined($endpoint) || (preg_match(self::ENDPOINT_PATTERN, $endpoint) !== 1)) {
+      return 'Coyote';
+    }
+
+
     return sprintf('<a href="%s/organizations/%s/resources/%d">Coyote</a>', $endpoint, $org_id, $resource->getCoyoteId());
   }
 
@@ -123,7 +131,7 @@ class Util {
     $config = \Drupal::config('coyote_img_desc.settings');
     $endpoint = $config->get('api_endpoint');
 
-    if (!Util::isDefined($endpoint)) {
+    if (!Util::isDefined($endpoint) || (preg_match(self::ENDPOINT_PATTERN, $endpoint) !== 1)) {
       return 'Coyote';
     }
 
