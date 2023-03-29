@@ -37,7 +37,7 @@ coyote_img_desc.get_info:
   methods:
     ['OPTIONS', 'GET', 'HEAD']
   requirements:
-    _access: 'TRUE'
+    _permission: 'administer nodes'
 
 coyote_img_desc.coyote_img_desc_form:
   path: '/admin/config/coyote-img-desc-configuration'
