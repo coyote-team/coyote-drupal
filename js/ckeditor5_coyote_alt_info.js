@@ -2,15 +2,13 @@
 
   'use strict';
 
-  if (!settings.path.currentPathIsAdmin) {
-    return;
-  }
-
   window.addEventListener('load', () => {
     if (!('MutationObserver') in window) {
       console.debug('MutationObserver unavailable!');
       return;
     }
+
+    console.info('[Coyote] Hooking into CKEditor5');
 
     let lastClickedImage = null;
 

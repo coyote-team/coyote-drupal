@@ -17,7 +17,6 @@ function coyote_img_desc_entity_view_alter(array &$build, EntityInterface $entit
 {
   $build['#coyote_node_url'] = $entity->toUrl('canonical', ['absolute' => true])->toString();
   $build['#post_render'][] = [EntityViewAlterPostRenderHook::class, 'hook'];
-  $build['#attached']['library'][] = 'coyote_img_desc/ckeditor5';
 }
 
 function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache) {
@@ -86,4 +85,15 @@ function coyote_img_desc_form_editor_image_dialog_alter(&$form, \Drupal\Core\For
     $form['attributes']['alt']['#required'] = false;
     $form['attributes']['alt']['#attributes']['readonly'] = "readonly";
     $form['attributes']['alt']['#attributes']['style'] = "background: #eeeeee";
+}
+
+function coyote_img_desc_form_alter(&$form, &$form_state, $form_id) {
+  $form_regex = '/^node_([a-z]+)_(edit_)?form$/';
+
+  if (preg_match($form_regex, $form_id) !== 1) {
+    // only hook into node_TYPE_form and node_TYPE_edit_form
+    return;
+  }
+
+  $form['#attached']['library'][] = 'coyote_img_desc/ckeditor5';
 }
