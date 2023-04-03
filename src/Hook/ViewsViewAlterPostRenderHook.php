@@ -13,7 +13,8 @@ class ViewsViewAlterPostRenderHook implements TrustedCallbackInterface {
   /**
    * @inheritDoc
    */
-  public static function trustedCallbacks() {
+  public static function trustedCallbacks(): array
+  {
     return ['hook'];
   }
 
@@ -27,7 +28,8 @@ class ViewsViewAlterPostRenderHook implements TrustedCallbackInterface {
       return $markup;
     }
    
-    return ContentParser::replaceImageDescriptions($markup, function(Image $image) use ($hostUri): ?string {
+    return ContentParser::replaceImageDescriptions($markup, function(Image $image) use ($hostUri): ?string
+    {
       $resource = Util::getImageResource($image, $hostUri);
       return is_null($resource) ? null : $resource->getCoyoteDescription();
     });

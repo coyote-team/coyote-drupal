@@ -6,9 +6,6 @@ use Coyote\ContentHelper\Image;
 use Coyote\CoyoteApiClientHelperFunctions;
 use Coyote\Model\ResourceModel;
 use Coyote\Payload\CreateResourcePayload;
-use Coyote\Payload\ResourceRepresentationPayload;
-use Drupal\coyote_img_desc\DB;
-use Drupal\coyote_img_desc\ImageResource;
 
 class Util {
   private const ENDPOINT_PATTERN = '/^https\:\/\/[a-z]+\.coyote\.pics\/?/';
