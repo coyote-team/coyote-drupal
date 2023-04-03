@@ -1,11 +1,11 @@
 <?php
 
+use Drupal\Core\Form\FormState;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\coyote_img_desc\Hook\NodeViewAlterPostRenderHook;
 use Drupal\coyote_img_desc\Hook\EntityViewAlterPostRenderHook;
 use Drupal\coyote_img_desc\Hook\ViewsViewAlterPostRenderHook;
 use Drupal\coyote_img_desc\Util;
-use Drupal\coyote_img_desc\ViewsRender;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\views\ViewExecutable;
@@ -19,7 +19,8 @@ function coyote_img_desc_entity_view_alter(array &$build, EntityInterface $entit
   $build['#post_render'][] = [EntityViewAlterPostRenderHook::class, 'hook'];
 }
 
-function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache) {
+function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache): void
+{
   $host = \Drupal::request()->getSchemeAndHttpHost();
   $path = $view->getPath();
 
@@ -35,7 +36,8 @@ function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output,
 *  Implement hook_field_widget_complete_form_alter
 *
 */
-function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complete_form, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complete_form, FormStateInterface $form_state, $context): void
+{
     if (
       !isset($field_widget_complete_form['#attributes']['class'][0]) ||
       $field_widget_complete_form['#attributes']['class'][0] !== "field--type-image" ||
@@ -58,7 +60,7 @@ function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complet
     $field_widget_complete_form['#after_build'][] = "coyote_img_desc_image_form_after_build";
 }
 
-function coyote_img_desc_image_form_after_build(array $form, \Drupal\Core\Form\FormState $form_state) {
+function coyote_img_desc_image_form_after_build(array $form, FormState $form_state) {
    $form['widget'][0]['alt']['#attributes']['readonly'] = "readonly";
    $form['widget'][0]['alt']['#attributes']['style'] = "background: #eeeeee";
 
@@ -69,7 +71,8 @@ function coyote_img_desc_image_form_after_build(array $form, \Drupal\Core\Form\F
 *  Implement hook_form_FORM_ID_alter
 *
 */
-function coyote_img_desc_form_editor_image_dialog_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+function coyote_img_desc_form_editor_image_dialog_alter(&$form, FormStateInterface $form_state, $form_id): void
+{
     $desc = $form['attributes']['alt']['#description'];
 
     if ($desc) {
@@ -87,7 +90,8 @@ function coyote_img_desc_form_editor_image_dialog_alter(&$form, \Drupal\Core\For
     $form['attributes']['alt']['#attributes']['style'] = "background: #eeeeee";
 }
 
-function coyote_img_desc_form_alter(&$form, &$form_state, $form_id) {
+function coyote_img_desc_form_alter(&$form, &$form_state, $form_id): void
+{
   $form_regex = '/^node_([a-z]+)_(edit_)?form$/';
 
   if (preg_match($form_regex, $form_id) !== 1) {

@@ -25,7 +25,8 @@ class CoyoteImgDescForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormId() {
+  public function getFormId(): string
+  {
     return 'coyote_img_desc_config_form';
   }
 
@@ -47,7 +48,8 @@ class CoyoteImgDescForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state): array {
+  public function buildForm(array $form, FormStateInterface $form_state): array
+  {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('coyote_img_desc.settings');
 
@@ -116,7 +118,6 @@ class CoyoteImgDescForm extends ConfigFormBase {
       '#default_value' => $config->get('coyote_process_unpublished_nodes'),
     ];
 
-
     return $form;
   }
 
@@ -144,7 +145,10 @@ class CoyoteImgDescForm extends ConfigFormBase {
         Util::getResourceGroupUri()
       );
       if (is_null($group)) {
-          $form['api_organization']['#field_suffix'] = $this->t("Resource group '@resourceGroup' could not be created", ['@resourceGroup' => Constants::RESOURCE_GROUP_NAME]);
+          $form['api_organization']['#field_suffix'] = $this->t(
+            "Resource group '@resourceGroup' could not be created",
+            ['@resourceGroup' => Constants::RESOURCE_GROUP_NAME]
+          );
           $config = $this->config('coyote_img_desc.settings');
           $config->set('api_resource_group', null);
           $config->save();
@@ -160,11 +164,13 @@ class CoyoteImgDescForm extends ConfigFormBase {
       $config->set('api_resource_group', (int) $resourceGroupId);
       $config->save();
       $form['api_organization']['#field_suffix'] = $this->t("Resource group {$resourceGroupId} &#xFE0F;");
+    } else {
+      \Drupal::logger(Constants::MODULE_NAME)->debug(
+        "Resource group '@resourceGroup' could not be created or found",
+        ['@resourceGroup' => Constants::RESOURCE_GROUP_NAME]);
     }
-
-    // TODO track that no resource group is available
-
   }
+
   private function getApiOrganizationIdFieldConfig(ProfileModel $profile, ?int $currentId): array
   {
     $organizations = $profile->getOrganizations();
@@ -195,7 +201,8 @@ class CoyoteImgDescForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames(): array {
+  protected function getEditableConfigNames(): array
+  {
     return [
       'coyote_img_desc.settings',
     ];
@@ -204,7 +211,8 @@ class CoyoteImgDescForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state): void
+  {
     $endpoint = Util::getSuffixedApiEndpoint($form_state->getValue('api_endpoint'));
     $token = $form_state->getValue('api_token');
     $organizationId = $form_state->getValue('api_organization');
@@ -228,8 +236,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
 
     if (is_null($organizationId)) {
       \Drupal::messenger()->addStatus($this->t("Please select an organization."));
-    }
-    else { 
+    } else {
         $config = $this->config('coyote_img_desc.settings');
         $storedToken = $config->get('api_token');
         $storedEndpoint = $config->get('api_endpoint');
@@ -243,7 +250,8 @@ class CoyoteImgDescForm extends ConfigFormBase {
     }
   }
 
-  public function submitForm(array &$form, FormStateInterface $form_state): void {
+  public function submitForm(array &$form, FormStateInterface $form_state): void
+  {
     $config = $this->config('coyote_img_desc.settings');
 
     $config->set('api_endpoint', $form_state->getValue('api_endpoint'));

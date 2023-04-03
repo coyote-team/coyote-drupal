@@ -5,28 +5,22 @@ namespace Drupal\coyote_img_desc\Form;
 require_once( __DIR__ . '/../../vendor/autoload.php');
 
 use Coyote\CoyoteApiClientHelperFunctions;
-use Coyote\Model\OrganizationModel;
 use Coyote\Model\ProfileModel;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Helper\CoyoteMembershipHelper;
 use Drupal\coyote_img_desc\Util;
-use Drupal\node\Entity\Node;
 use Coyote\ContentHelper;
 use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 
 class CoyoteImgBatchForm extends FormBase {
-
-  /**
-   * {@inheritdoc}
-   */
-
   private ?ProfileModel $profile;
   private ?string $role;
 
-  public function getFormId() {
+  public function getFormId(): string
+  {
     return 'coyote_img_batch_form';
   }
 
@@ -53,12 +47,14 @@ class CoyoteImgBatchForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state): array {
+  public function buildForm(array $form, FormStateInterface $form_state): array
+  {
     $config = $this->config('coyote_img_desc.settings');
     $token = $config->get('api_token');
     $endpoint = Util::getSuffixedApiEndpoint();
     $resourceGroup = $config->get('api_resource_group');
     $organizationId = $config->get('api_organization');
+
     if (self::isDefined($token) && self::isDefined($endpoint)) {
       $this->profile = CoyoteApiClientHelperFunctions::getProfile($endpoint, $token);
       $this->role = $this->getProfileRole();
@@ -68,7 +64,28 @@ class CoyoteImgBatchForm extends FormBase {
 
     $form['coyote_message'] = [
        '#type' => 'item',
-        '#markup' => "<strong>".$this->t('Values used'). "</strong><br />".$this->t('Coyote API token:')." ".$token."<br />". $this->t('Coyote API endpoint:') ." ".$endpoint. "<br />" . $this->t('Organization ID:'). " ".$organizationId . "<br />". $this->t('Resource Group:'). " ".$resourceGroup."<br />".$this->t("Permissions:")." ".$this->role,
+        '#markup' => "<strong>" .
+          $this->t('Values used') .
+          "</strong><br />" .
+          $this->t('Coyote API token:') .
+          " " .
+          $token .
+          "<br />" .
+          $this->t('Coyote API endpoint:') .
+          " " .
+          $endpoint .
+          "<br />" .
+          $this->t('Organization ID:') .
+          " " .
+          $organizationId .
+          "<br />" .
+          $this->t('Resource Group:') .
+          " " .
+          $resourceGroup .
+          "<br />" .
+          $this->t("Permissions:") .
+          " " .
+          $this->role,
     ];
 
     if (!$validConfig) {
@@ -88,7 +105,8 @@ class CoyoteImgBatchForm extends FormBase {
     return $form;
   }
 
-  private function hasValidBatchProcessingConfig(): bool {
+  private function hasValidBatchProcessingConfig(): bool
+  {
     $config = $this->config('coyote_img_desc.settings');
     $token = $config->get('api_token');
     $endpoint = Util::getSuffixedApiEndpoint();
@@ -109,7 +127,8 @@ class CoyoteImgBatchForm extends FormBase {
     return true;
   } 
 
-  public function submitForm(array &$form, FormStateInterface $form_state): void {
+  public function submitForm(array &$form, FormStateInterface $form_state): void
+  {
      $entities = array_keys(\Drupal::entityTypeManager()->getDefinitions());
      $operations = [];
 
@@ -129,7 +148,8 @@ class CoyoteImgBatchForm extends FormBase {
      batch_set($batch);
   }
   
-  public static function batchProcessingEntities($id, $entity, &$context): bool {
+  public static function batchProcessingEntities($id, $entity, &$context): bool
+  {
      $message = 'Processing all available entities...';
      $results = $context['results'];
    
@@ -146,7 +166,7 @@ class CoyoteImgBatchForm extends FormBase {
         $build = $viewBuilder->view($s, $view_mode);
         $hostUri = $s->toUrl('canonical', ['absolute' => true])->toString();
         $output = render($build);
-     } catch (UndefinedLinkTemplateException | InvalidPluginDefinitionException | Exception $e) {
+     } catch (UndefinedLinkTemplateException | InvalidPluginDefinitionException | \Exception $e) {
        \Drupal::logger(Constants::MODULE_NAME)->warning(`Exception during entity processing: {$e->getMessage()}`);
         return false;
      }
@@ -177,9 +197,12 @@ class CoyoteImgBatchForm extends FormBase {
 
      $context['message'] = $message;
      $context['results'] = $results;
+
+     return true;
   }
 
-  public static function batchProcessingEntitiesFinished($success, $results, $operations) {
+  public static function batchProcessingEntitiesFinished($success, $results, $operations): void
+  {
     // The 'success' parameter means no fatal PHP errors were detected. All
     // other error management should be handled using 'results'.
     if ($success) {
