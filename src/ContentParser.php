@@ -28,7 +28,9 @@ class ContentParser {
       return $content;
     }
 
-    $images = $contentHelper->getImages();
+    $images = $contentHelper->getImages(function (string $src): bool {
+      return filter_var($src, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED);
+    });
 
     $map = [];
 

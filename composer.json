@@ -1,7 +1,7 @@
 {
     "require": {
         "coyote/coyote-api-client": "^1.0.21",
-        "coyote/coyote-php-content-helper": "^1.0.5"
+        "coyote/coyote-php-content-helper": "^1.0.6"
     },
     "provide": {
         "guzzlehttp/guzzle": "*",
