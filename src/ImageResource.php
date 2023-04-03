@@ -2,6 +2,9 @@
 
 namespace Drupal\coyote_img_desc;
 
+/**
+ * Model class reflecting the Module DB record structure.
+ */
 class ImageResource {
   private string $sourceUriSha1;
   private string $sourceUri;
@@ -45,8 +48,13 @@ class ImageResource {
   private ?string $localDescription;
   private ?string $coyoteDescription;
 
-  public function __construct(string $sourceUriSha1, string $sourceUri, int $coyoteId, string $localDescription = null, string $coyoteDescription = null)
-  {
+  public function __construct(
+    string $sourceUriSha1,
+    string $sourceUri,
+    int $coyoteId,
+    string $localDescription = null,
+    string $coyoteDescription = null
+  ) {
     $this->sourceUriSha1 = $sourceUriSha1;
     $this->sourceUri = $sourceUri;
     $this->coyoteId = $coyoteId;

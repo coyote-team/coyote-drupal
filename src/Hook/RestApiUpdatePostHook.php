@@ -7,6 +7,12 @@ use Drupal\coyote_img_desc\DB;
 use Drupal\coyote_img_desc\Constants;
 
 class RestApiUpdatePostHook {
+
+  /**
+   * @param \Coyote\Model\WebhookUpdateModel|null $update
+   *
+   * @return bool
+   */
   public static function hook(?WebhookUpdateModel $update): bool
   {
     if (is_null($update)) {

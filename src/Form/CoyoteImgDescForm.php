@@ -171,6 +171,14 @@ class CoyoteImgDescForm extends ConfigFormBase {
     }
   }
 
+  /**
+   * Generate the render structure for a "Organization selection" dropdown element.
+   *
+   * @param \Coyote\Model\ProfileModel $profile
+   * @param int|null $currentId
+   *
+   * @return array
+   */
   private function getApiOrganizationIdFieldConfig(ProfileModel $profile, ?int $currentId): array
   {
     $organizations = $profile->getOrganizations();

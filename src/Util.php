@@ -10,6 +10,11 @@ use Coyote\Payload\CreateResourcePayload;
 class Util {
   private const ENDPOINT_PATTERN = '/^https\:\/\/[a-z]+\.coyote\.pics\/?/';
 
+  /**
+   * @param \Coyote\ContentHelper\Image $image
+   *
+   * @return \Drupal\coyote_img_desc\ImageResource|null
+   */
   private static function getImageResourceFromDB(Image $image): ?ImageResource
   {
     $sha1 = sha1($image->getSrc());
@@ -28,6 +33,14 @@ class Util {
     );
   }
 
+  /**
+   * Convert an API ResourceModel into an ImageResource and store it in the DB.
+   *
+   * @param \Coyote\ContentHelper\Image $image
+   * @param \Coyote\Model\ResourceModel $resource
+   *
+   * @return \Drupal\coyote_img_desc\ImageResource
+   */
   private static function createImageResourceFromCoyoteResource(Image $image, ResourceModel $resource): ImageResource
   {
     $sha1 = sha1($image->getSrc());
@@ -48,6 +61,13 @@ class Util {
     return $imageResource;
   }
 
+  /**
+   * Generate a protocol-agnostic image URL, e.g. '//example.org/img.png'.
+   *
+   * @param string $url
+   *
+   * @return string
+   */
   private static function getImageUrl(string $url): string
   {
     // if the image is relative, strip off the first slash
@@ -60,6 +80,12 @@ class Util {
     return preg_replace('/^https?:/', '', $url, 1);
   }
 
+  /**
+   * @param \Coyote\ContentHelper\Image $image
+   * @param string|null $hostUri
+   *
+   * @return \Drupal\coyote_img_desc\ImageResource|null
+   */
   private static function getImageResourceFromAPI(Image $image, ?string $hostUri = null): ?ImageResource
   {
     $config = \Drupal::config('coyote_img_desc.settings');
@@ -100,6 +126,13 @@ class Util {
     return self::createImageResourceFromCoyoteResource($image, $resource);
   }
 
+  /**
+   * Generate a resource link using the supplied Coyote host (testing or live).
+   *
+   * @param \Drupal\coyote_img_desc\ImageResource $resource
+   *
+   * @return string
+   */
   public static function getResourceLink(ImageResource $resource): string
   {
     $config = \Drupal::config('coyote_img_desc.settings');
@@ -110,20 +143,39 @@ class Util {
       return 'Coyote';
     }
 
-
     return sprintf('<a href="%s/organizations/%s/resources/%d">Coyote</a>', $endpoint, $org_id, $resource->getCoyoteId());
   }
 
+  /**
+   * Retrieve a resource either from the database or through the API.
+   *
+   * @param \Coyote\ContentHelper\Image $image
+   * @param string|null $hostUri
+   *
+   * @return \Drupal\coyote_img_desc\ImageResource|null
+   */
   public static function getImageResource(Image $image, ?string $hostUri = null): ?ImageResource
   {
     return self::getImageResourceFromDB($image) ?? self::getImageResourceFromAPI($image, $hostUri);
   }
 
+  /**
+   * @param string $url
+   *
+   * @return \Drupal\coyote_img_desc\ImageResource|null
+   */
   public static function getImageResourceByUrl(string $url): ?ImageResource
   {
     return self::getImageResource(new Image($url, ''));
   }
 
+  /**
+   * Generate a link to testing or live Coyote website which is safe to inject.
+   *
+   * @param string|null $suffix
+   *
+   * @return string
+   */
   public static function getCoyoteLink(?string $suffix = null): string {
     $config = \Drupal::config('coyote_img_desc.settings');
     $endpoint = $config->get('api_endpoint');
@@ -135,6 +187,11 @@ class Util {
     return sprintf('<a href="%s">Coyote</a>', $endpoint);
   }
 
+  /**
+   * @param string|null $endpoint
+   *
+   * @return string|null
+   */
   public static function getSuffixedApiEndpoint(?string $endpoint = null): ?string {
     $config = \Drupal::config('coyote_img_desc.settings');
     $endpoint = $endpoint ?? $config->get('api_endpoint');
@@ -146,11 +203,21 @@ class Util {
     return sprintf("%s/api/v1", $endpoint);
   }
 
+  /**
+   * @param string $var
+   *
+   * @return bool
+   */
   private static function isDefined(string $var): bool
   {
     return strlen($var) > 0;
   }
 
+  /**
+   * Generate a Resource Group URI using the Drupal installation hostname.
+   *
+   * @return string
+   */
   public static function getResourceGroupUri(): string
   {
     $host = \Drupal::request()->getSchemeAndHttpHost();

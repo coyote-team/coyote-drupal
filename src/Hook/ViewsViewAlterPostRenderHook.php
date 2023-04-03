@@ -18,6 +18,12 @@ class ViewsViewAlterPostRenderHook implements TrustedCallbackInterface {
     return ['hook'];
   }
 
+  /**
+   * @param \Drupal\Core\Render\Markup $markup
+   * @param array $output
+   *
+   * @return string
+   */
   public static function hook(Markup $markup, array $output): string
   {
     $config = \Drupal::config('coyote_img_desc.settings');

@@ -9,6 +9,16 @@ use Exception;
 
 class ContentParser {
 
+  /**
+   * Providing a chunk of HTML ($content), replace its image descriptions by known Coyote descriptions using supplied function $descriptionLookupFn.
+   *
+   * $descriptionLookupFn = (Image $image) => ?string
+   *
+   * @param string $content
+   * @param callable $descriptionLookupFn
+   *
+   * @return string
+   */
   public static function replaceImageDescriptions(string $content, callable $descriptionLookupFn): string
   {
     try {
@@ -34,5 +44,4 @@ class ContentParser {
 
     return $contentHelper->setImageAlts($map);
   }
-
 }
