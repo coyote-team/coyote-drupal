@@ -3,6 +3,7 @@
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Hook\EntityViewAlterPostRenderHook;
 use Drupal\coyote_img_desc\Hook\ViewsViewAlterPostRenderHook;
 use Drupal\coyote_img_desc\Util;
@@ -99,5 +100,5 @@ function coyote_img_desc_form_alter(&$form, &$form_state, $form_id): void
     return;
   }
 
-  $form['#attached']['library'][] = 'coyote_img_desc/ckeditor5';
+  $form['#attached']['library'][] = Constants::CKEDITOR5_LIBRARY;
 }

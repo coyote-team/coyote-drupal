@@ -8,4 +8,5 @@ class Constants {
   public const METUM = 'Alt';
   public const RESOURCE_GROUP_NAME = 'Drupal';
   public const RESOURCE_GROUP_ENDPOINT_SUFFIX = 'coyote/callback';
+  public const CKEDITOR5_LIBRARY = 'coyote_img_desc/ckeditor5';
 }
