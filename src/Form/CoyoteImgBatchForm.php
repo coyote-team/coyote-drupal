@@ -183,7 +183,13 @@ class CoyoteImgBatchForm extends FormBase {
        return false;
      }
 
-     $contentHelper = new ContentHelper($output);
+     try {
+       $contentHelper = new ContentHelper($output);
+     } catch (\Exception $e) {
+       \Drupal::logger(Constants::MODULE_NAME)->warning(`Unable to instantiate ContentHelper during entity processing: {$e->getMessage()}`);
+       return false;
+     }
+
 
      $images = $contentHelper->getImages();
      foreach($images as $image) {
