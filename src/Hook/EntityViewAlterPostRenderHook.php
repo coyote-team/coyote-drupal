@@ -18,6 +18,12 @@ class EntityViewAlterPostRenderHook implements TrustedCallbackInterface {
     return ['hook'];
   }
 
+  /**
+   * @param string $markup
+   * @param array $output
+   *
+   * @return string
+   */
   public static function hook(string $markup, array $output): string
   {
     $config = \Drupal::config('coyote_img_desc.settings');

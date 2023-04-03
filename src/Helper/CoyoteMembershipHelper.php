@@ -12,7 +12,13 @@ class CoyoteMembershipHelper {
     'admin' => 3,
   ];
 
-  /** @var MembershipModel[] $memberships */
+  /**
+   * Given a list of Memberships, return the highest role available within.
+   *
+   * @param MembershipModel[] $memberships
+   *
+   * @return string|null
+   */
   public static function getHighestMembershipRole(array $memberships): ?string
   {
     $roles = array_reduce($memberships, function (array $carry, MembershipModel $membershipModel): array

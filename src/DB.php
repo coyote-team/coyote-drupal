@@ -2,6 +2,9 @@
 
 namespace Drupal\coyote_img_desc;
 
+/**
+ * Utility functions for resource table manipulation.
+ */
 class DB {
   public static function clearResourceTable(): int {
     $database = \Drupal::database();
@@ -32,7 +35,10 @@ class DB {
           'coyote_description' => $resource->getCoyoteDescription()
         ])->execute();
     } catch (\Exception $error) {
-      // TODO log this exception
+      \Drupal::logger(Constants::MODULE_NAME)->error(
+        "Unable to insert resource: @error",
+        ['@error' => $error->getMessage()]
+      );
     }
   }
 
@@ -79,7 +85,3 @@ class DB {
     return $record;
   }
 }
-
-
-
-

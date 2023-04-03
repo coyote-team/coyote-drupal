@@ -14,12 +14,28 @@ use Drupal\views\Plugin\views\cache\CachePluginBase;
 
 require_once(__DIR__ . '/vendor/autoload.php');
 
+/**
+ * Implements hook_entity_view_alter().
+ *
+ * @param array $build
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ * @param \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display
+ *
+ * @throws \Drupal\Core\Entity\EntityMalformedException
+ */
 function coyote_img_desc_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void
 {
   $build['#coyote_node_url'] = $entity->toUrl('canonical', ['absolute' => true])->toString();
   $build['#post_render'][] = [EntityViewAlterPostRenderHook::class, 'hook'];
 }
 
+/**
+ * Implements hook_views_post_render().
+ *
+ * @param \Drupal\views\ViewExecutable $view
+ * @param array $output
+ * @param \Drupal\views\Plugin\views\cache\CachePluginBase $cache
+ */
 function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache): void
 {
   $host = \Drupal::request()->getSchemeAndHttpHost();
@@ -33,10 +49,13 @@ function coyote_img_desc_views_post_render(ViewExecutable $view, array &$output,
   $output['#post_render'][] = [ViewsViewAlterPostRenderHook::class, 'hook'];
 }
 
-/*
-*  Implement hook_field_widget_complete_form_alter
-*
-*/
+/**
+ * Implements hook_field_widget_complete_form_alter().
+ *
+ * @param $field_widget_complete_form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param $context
+ */
 function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complete_form, FormStateInterface $form_state, $context): void
 {
     if (
@@ -61,6 +80,14 @@ function coyote_img_desc_field_widget_complete_form_alter(&$field_widget_complet
     $field_widget_complete_form['#after_build'][] = "coyote_img_desc_image_form_after_build";
 }
 
+/**
+ * Implements hook_form_after_build().
+ *
+ * @param array $form
+ * @param \Drupal\Core\Form\FormState $form_state
+ *
+ * @return array
+ */
 function coyote_img_desc_image_form_after_build(array $form, FormState $form_state) {
    $form['widget'][0]['alt']['#attributes']['readonly'] = "readonly";
    $form['widget'][0]['alt']['#attributes']['style'] = "background: #eeeeee";
@@ -68,10 +95,13 @@ function coyote_img_desc_image_form_after_build(array $form, FormState $form_sta
    return $form;  
 }
 
-/*
-*  Implement hook_form_FORM_ID_alter
-*
-*/
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param $form_id
+ */
 function coyote_img_desc_form_editor_image_dialog_alter(&$form, FormStateInterface $form_state, $form_id): void
 {
     $desc = $form['attributes']['alt']['#description'];
@@ -91,6 +121,13 @@ function coyote_img_desc_form_editor_image_dialog_alter(&$form, FormStateInterfa
     $form['attributes']['alt']['#attributes']['style'] = "background: #eeeeee";
 }
 
+/**
+ * Implements hook_form_alter().
+ *
+ * @param $form
+ * @param $form_state
+ * @param $form_id
+ */
 function coyote_img_desc_form_alter(&$form, &$form_state, $form_id): void
 {
   $form_regex = '/^node_([a-z]+)_(edit_)?form$/';

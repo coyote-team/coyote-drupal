@@ -10,12 +10,14 @@ use Drupal\coyote_img_desc\Util;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RestApiController extends ControllerBase {
-  public static function status(): JsonResponse {
+  public static function status(): JsonResponse
+  {
     $version = Constants::VERSION;
     return new JsonResponse(['status' => "Coyote Drupal Plugin v{$version} OK"]);
   }
 
-  public static function callback(): JsonResponse {
+  public static function callback(): JsonResponse
+  {
     $config = \Drupal::config('coyote_img_desc.settings');
     $ignore = $config->get('ignore_coyote_webhook_calls');
     if ($ignore) return new JsonResponse(['status' => 'ignored'], 403);
@@ -30,7 +32,8 @@ class RestApiController extends ControllerBase {
     return new JsonResponse(['status' => $result]);
   }
 
-  public static function get_info(): JsonResponse {
+  public static function get_info(): JsonResponse
+  {
     $request = \Drupal::request();
 
     $url = $request->query->get('url');
