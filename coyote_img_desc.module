@@ -2,6 +2,7 @@
 
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Hook\EntityViewAlterPostRenderHook;
@@ -138,4 +139,33 @@ function coyote_img_desc_form_alter(&$form, &$form_state, $form_id): void
   }
 
   $form['#attached']['library'][] = Constants::CKEDITOR5_LIBRARY;
+}
+
+use Drupal\Component\Utility\Html;
+
+/**
+ * Implements hook_help().
+ *
+ * @param $route_name
+ * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+ *
+ * @return string
+ */
+function coyote_img_desc_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.coyote_img_desc':
+      $text = file_get_contents(__DIR__ . '/README.md');
+      if (!\Drupal::moduleHandler()->moduleExists('markdown')) {
+        return '<pre>' . Html::escape($text) . '</pre>';
+      } else {
+        // Use the Markdown filter to render the README.
+        $filter_manager = \Drupal::service('plugin.manager.filter');
+        $settings = \Drupal::configFactory()->get('markdown.settings')->getRawData();
+        $config = ['settings' => $settings];
+        $filter = $filter_manager->createInstance('markdown', $config);
+        return $filter->process($text, 'en');
+      }
+  }
+
+  return '';
 }
