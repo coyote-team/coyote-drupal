@@ -1,7 +1,7 @@
 name: Coyote Image Description
 type: module
 description: 'Provides and manages image descriptions via the coyote.pics service'
-core_version_requirement: 9.x
+core_version_requirement: 9.x || 10.x
 package: Custom
 dependencies:
   - drupal:editor
