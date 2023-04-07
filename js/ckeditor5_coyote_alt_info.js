@@ -55,20 +55,24 @@
         return;
       }
 
-      const selector = '.image-inline, .ck-widget';
+      const selector = '.ck.ck-content img, .ck.ck-content figure, .ck.ck-content .image-inline.ck-widget';
       mutation.addedNodes
         .forEach(node => {
           if (node.nodeType !== Node.ELEMENT_NODE || !node.matches(selector)) {
             return;
           }
 
-          const img = node.querySelector('img');
-
-          if (img) {
-            img.addEventListener('click', function () {
-              lastClickedImage = this;
-            })
+          if (!node.matches('img')) {
+            node = node.querySelector('img');
           }
+
+          node.addEventListener('click', function () {
+            lastClickedImage = this;
+          })
+
+          // if this is an inserted image, the alt text popup will show
+          // automatically. Hence it needs to become the current "active" image.
+          lastClickedImage = node;
         });
     }
 
@@ -83,7 +87,7 @@
     }
 
     trackMutations('.ck-body-wrapper', processWrapperMutation);
-    trackMutations('.ck, .ck-content', processImageMutation);
+    trackMutations('.ck.ck-content', processImageMutation);
   })
 
 }(Drupal, drupalSettings, once, jQuery));
