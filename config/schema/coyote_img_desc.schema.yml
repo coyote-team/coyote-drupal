@@ -23,3 +23,6 @@ coyote_img_desc.settings:
     coyote_process_unpublished_nodes:
       type: boolean
       label:  'Disable processing unpublished nodes'
+    coyote_standalone_mode:
+      type: boolean
+      label:  'Standalone mode'

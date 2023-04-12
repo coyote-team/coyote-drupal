@@ -13,11 +13,20 @@ class RestApiController extends ControllerBase {
   public static function status(): JsonResponse
   {
     $version = Constants::VERSION;
+
+    if (Util::isStandAlone()) {
+      return new JsonResponse(['status' => "Coyote Drupal Plugin v{$version} OK (Standalone)"]);
+    }
+
     return new JsonResponse(['status' => "Coyote Drupal Plugin v{$version} OK"]);
   }
 
   public static function callback(): JsonResponse
   {
+    if (Util::isStandAlone()) {
+      return new JsonResponse(['status' => 'standalone'], 403);
+    }
+
     $config = \Drupal::config('coyote_img_desc.settings');
     $ignore = $config->get('ignore_coyote_webhook_calls');
 

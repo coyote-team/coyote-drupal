@@ -118,7 +118,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
       '#default_value' => $config->get('coyote_process_unpublished_nodes'),
     ];
 
-    $form['coyote_is_standalone'] = [
+    $form['coyote_standalone_mode'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Standalone mode'),
       '#description' => $this->t('Do not attempt communication with the Coyote API.'),
@@ -275,6 +275,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
     $config->set('disable_coyote_filtering', $form_state->getValue('disable_coyote_filtering'));
     $config->set('ignore_coyote_webhook_calls', $form_state->getValue('ignore_coyote_webhook_calls'));
     $config->set('coyote_process_unpublished_nodes', $form_state->getValue('coyote_process_unpublished_nodes'));
+    $config->set('coyote_standalone_mode', $form_state->getValue('coyote_standalone_mode'));
     $config->save();
 
     drupal_flush_all_caches();

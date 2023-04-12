@@ -6,6 +6,7 @@ use Coyote\ContentHelper\Image;
 use Coyote\CoyoteApiClientHelperFunctions;
 use Coyote\Model\ResourceModel;
 use Coyote\Payload\CreateResourcePayload;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class Util {
   private const ENDPOINT_PATTERN = '/^https\:\/\/[a-z]+\.coyote\.pics\/?/';
@@ -88,6 +89,10 @@ class Util {
    */
   private static function getImageResourceFromAPI(Image $image, ?string $hostUri = null): ?ImageResource
   {
+    if (Util::isStandAlone()) {
+      return null;
+    }
+
     $config = \Drupal::config('coyote_img_desc.settings');
     $token = $config->get('api_token');
     $endpoint = Util::getSuffixedApiEndpoint();
@@ -224,5 +229,10 @@ class Util {
     return sprintf('%s/%s', $host, Constants::RESOURCE_GROUP_ENDPOINT_SUFFIX);
   }
 
+  public static function isStandAlone(): bool
+  {
+    $config = \Drupal::config('coyote_img_desc.settings');
+    return !!$config->get('coyote_standalone_mode');
+  }
 }
 

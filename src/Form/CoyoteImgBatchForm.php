@@ -88,17 +88,21 @@ class CoyoteImgBatchForm extends FormBase {
           $this->role,
     ];
 
-    if (!$validConfig) {
+    if (Util::isStandAlone()) {
+      $form['coyote_warning'] = [
+        '#type' => 'item',
+        '#markup' => "<strong>".  $this->t("Running in standalone mode. Disable standalone mode to batch process.")."</strong>",
+      ];
+    } else if (!$validConfig) {
        $form['coyote_warning'] = [
           '#type' => 'item',
           '#markup' => "<strong>".  $this->t("Invalid configuration, please verify the settings are correct.")."</strong>",
        ];
-          
     }
 
     $form['batch_processing'] = [
       '#type' => 'submit',
-      '#disabled' => !$validConfig,
+      '#disabled' => Util::isStandAlone() || !$validConfig,
       '#value' => $this->t('Batch process all images through Coyote'),
     ];
 
@@ -134,15 +138,15 @@ class CoyoteImgBatchForm extends FormBase {
 
      foreach ($entities as $entity){  
         $ids = \Drupal::entityQuery($entity)->execute();
-        foreach ($ids as $id){     
+        foreach ($ids as $id) {
           $operations[] = [['\Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingEntities'], [$id, $entity]];
         }
      }
 
      $batch = [
-          'title' => $this->t('Batch processing all images...'),
-          'operations' => $operations,
-          'finished' => ['Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingEntitiesFinished'],
+        'title' => $this->t('Batch processing all images...'),
+        'operations' => $operations,
+        'finished' => ['Drupal\coyote_img_desc\Form\CoyoteImgBatchForm','batchProcessingEntitiesFinished'],
      ];
 
      batch_set($batch);
