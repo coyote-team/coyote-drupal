@@ -13,7 +13,6 @@ use Drupal\coyote_img_desc\Constants;
 use Drupal\coyote_img_desc\Helper\CoyoteMembershipHelper;
 use Drupal\coyote_img_desc\Util;
 use Drupal\coyote_img_desc\DB;
-use JetBrains\PhpStorm\ArrayShape;
 
 class CoyoteImgDescForm extends ConfigFormBase {
 
@@ -100,6 +99,7 @@ class CoyoteImgDescForm extends ConfigFormBase {
     if (!is_null($profile) && !is_null($storedOrganizationId)) {
       $this->verifyResourceGroup($form, $endpoint, $token, $storedOrganizationId, $config->get('api_resource_group'));
     }
+
     $form['disable_coyote_filtering'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Disable Coyote filtering during rendering'),
@@ -116,6 +116,13 @@ class CoyoteImgDescForm extends ConfigFormBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Process unpublished nodes'),
       '#default_value' => $config->get('coyote_process_unpublished_nodes'),
+    ];
+
+    $form['coyote_is_standalone'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Standalone mode'),
+      '#description' => $this->t('Do not attempt communication with the Coyote API.'),
+      '#default_value' => $config->get('coyote_standalone_mode'),
     ];
 
     return $form;
